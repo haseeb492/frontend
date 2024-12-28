@@ -1,0 +1,8 @@
+{
+  "hooks/react-query-provider.tsx -> @/Components/InitializeUser": {
+    "id": "hooks/react-query-provider.tsx -> @/Components/InitializeUser",
+    "files": [
+      "static/chunks/_app-pages-browser_src_Components_InitializeUser_index_tsx.js"
+    ]
+  }
+}
