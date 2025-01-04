@@ -146,7 +146,7 @@ const Page = () => {
         title="Today's Report"
         subTitle="Manage your daily report & tasks"
       />
-      {!isTodaysReportSubmitted ? (
+      {!isTodaysReportSubmitted && dailyReport?.report ? (
         <div
           className="flex flex-col p-4 border border-gray-300 shadow-md
        shadow-gray-400 mt-5 rounded-[5px]"

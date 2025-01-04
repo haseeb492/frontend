@@ -1,11 +1,15 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import axiosInstance from "@/AxiosInterceptor";
-import Clock from "@/Components/Clock";
 import Button from "@/Components/Common/Button";
-import Loader from "@/Components/Common/Loader";
+const Loader = dynamic(() => import("@/Components/Common/Loader"), {
+  ssr: false,
+});
 import { toast } from "@/Components/Common/Toast/use-toast";
-import SetPassword from "@/Components/SetPassword";
+const SetPassword = dynamic(() => import("@/Components/SetPassword"), {
+  ssr: false,
+});
 import useGetActivityLog from "@/hooks/use-get-activity-log";
 import useGetCheckInStatus from "@/hooks/use-get-check-in-status";
 import useGetProfessionalInfo from "@/hooks/use-get-professional-info";
@@ -24,14 +28,19 @@ import { RootState } from "@/redux/store";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import CheckedInTimer from "@/Components/CheckedInTimer";
-import WorkStatusTimer from "@/Components/WorkStatusTmer";
+const CheckedInTimer = dynamic(() => import("@/Components/CheckedInTimer"), {
+  ssr: false,
+});
+const WorkStatusTimer = dynamic(() => import("@/Components/WorkStatusTmer"), {
+  ssr: false,
+});
 import useGetWorkStatusDuration from "@/hooks/use-get-work-status-duration";
 import { Icon } from "@iconify/react";
 import { DateRangePicker } from "@/Components/Common/DateRangePicker";
 import useGetAverageProductiveHours from "@/hooks/use-get-average-productive-hours";
-import HeaderCard from "@/Components/HeaderCard";
-//comment
+const HeaderCard = dynamic(() => import("@/Components/HeaderCard"), {
+  ssr: false,
+});
 
 export default function Home() {
   const queryClient = useQueryClient();

@@ -1,14 +1,21 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-import ActivityLogCard from "@/Components/ActivityLogCard";
+const ActivityLogCard = dynamic(() => import("@/Components/ActivityLogCard"), {
+  ssr: false,
+});
 import { DateRangePicker } from "@/Components/Common/DateRangePicker";
-import Loader from "@/Components/Common/Loader";
 import useGetActivityLogs from "@/hooks/use-get-activity-logs";
 import { checkAccess, formatDate, getLastMonthDateRange } from "@/lib/utils";
-import CircularLoader from "@/Components/Common/CircularLoader";
+const CircularLoader = dynamic(
+  () => import("@/Components/Common/CircularLoader"),
+  {
+    ssr: false,
+  }
+);
 import { ACCESS_CONTROL } from "@/constants/accessControlConfig";
 import UseGetAllRoles from "@/hooks/use-get-all-roles";
 import useGetUsers from "@/hooks/use-get-users";
@@ -20,7 +27,9 @@ import {
   SelectValue,
 } from "@/Components/Common/SelectionField";
 import useGetAllUsers from "@/hooks/use-get-all-users";
-import HeaderCard from "@/Components/HeaderCard";
+const HeaderCard = dynamic(() => import("@/Components/HeaderCard"), {
+  ssr: false,
+});
 
 interface checkInOutHistoryType {
   checkInTime?: Date | undefined;
@@ -165,10 +174,6 @@ const Page = () => {
     };
   }, [hasNextPage, isFetchingNextPage, isActivityLogsLoading]);
 
-  if (isActivityLogsLoading && currentPage === 1) {
-    return <Loader />;
-  }
-
   return (
     <div className="flex flex-col w-full">
       <HeaderCard
@@ -213,27 +218,33 @@ const Page = () => {
           />
         </div>
       </div>
-      <div className="flex flex-col gap-x-3">
-        {activityLogs && activityLogs.length > 0 ? (
-          activityLogs.map((log: ActivityLogsType) => (
-            <ActivityLogCard
-              key={log._id}
-              log={log}
-              isExpanded={expandedCardId === log?._id}
-              onToggle={() => handleToggle(log?._id)}
-            />
-          ))
-        ) : (
-          <div className="text-center text-gray-500 mt-10">
-            No activity logs found
-          </div>
-        )}
-        {isFetchingNextPage && (
-          <div className="flex justify-center my-4">
-            <CircularLoader />
-          </div>
-        )}
-      </div>
+      {isActivityLogsLoading && currentPage === 1 ? (
+        <div className="flex items-center justify-center mt-20">
+          <CircularLoader size={50} />
+        </div>
+      ) : (
+        <div className="flex flex-col gap-x-3">
+          {activityLogs && activityLogs.length > 0 ? (
+            activityLogs.map((log: ActivityLogsType) => (
+              <ActivityLogCard
+                key={log._id}
+                log={log}
+                isExpanded={expandedCardId === log?._id}
+                onToggle={() => handleToggle(log?._id)}
+              />
+            ))
+          ) : (
+            <div className="text-center text-gray-500 mt-10">
+              No activity logs found
+            </div>
+          )}
+          {isFetchingNextPage && (
+            <div className="flex justify-center my-4">
+              <CircularLoader />
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

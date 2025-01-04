@@ -2,6 +2,7 @@
 
 import axiosInstance from "@/AxiosInterceptor";
 import Button from "@/Components/Common/Button";
+import CircularLoader from "@/Components/Common/CircularLoader";
 import {
   Form,
   FormControl,
@@ -18,6 +19,7 @@ import {
   SelectValue,
 } from "@/Components/Common/SelectionField";
 import { toast } from "@/Components/Common/Toast/use-toast";
+import useGetInternalProjects from "@/hooks/use-get-internal-projects";
 import useGetProjects from "@/hooks/use-get-projects";
 import useGetProjectsByResource from "@/hooks/use-get-projects-by-resource";
 import { taskFormSchema } from "@/lib/schemas";
@@ -59,10 +61,24 @@ const AddTaskForm = ({ reportId }: AddTaskFormProps) => {
     "in_progress",
     !isEngineer
   );
+  const { internalProjects } = useGetInternalProjects(
+    user?._id,
+    user?._id ? true : false
+  );
 
   const projectsList = isEngineer
     ? projectsByresource?.projects
     : projects?.projects;
+
+  const safeProjectsList = Array.isArray(projectsList) ? projectsList : [];
+  const safeInternalProjects = Array.isArray(internalProjects)
+    ? internalProjects
+    : [];
+
+  const allProjects =
+    isEngineer || isManager
+      ? [...safeProjectsList, ...safeInternalProjects]
+      : safeInternalProjects;
 
   const form = useForm<z.infer<typeof taskFormSchema>>({
     resolver: zodResolver(taskFormSchema),
@@ -112,7 +128,11 @@ const AddTaskForm = ({ reportId }: AddTaskFormProps) => {
   };
 
   if (isProjectsLoading || isEngineerProjectsLoading) {
-    return <Loader />;
+    return (
+      <div className="flex items-center justify-center mb-10">
+        <CircularLoader />
+      </div>
+    );
   }
   return (
     <>
@@ -203,8 +223,8 @@ const AddTaskForm = ({ reportId }: AddTaskFormProps) => {
                           <SelectValue placeholder="Select a project" />
                         </SelectTrigger>
                         <SelectContent>
-                          {projectsList ? (
-                            projectsList.map(
+                          {allProjects ? (
+                            allProjects.map(
                               (project: { name: string; _id: string }) => {
                                 return (
                                   <SelectItem

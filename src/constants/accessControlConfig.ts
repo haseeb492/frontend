@@ -75,15 +75,6 @@ export const ACCESS_CONTROL: AccessControlConfig = {
         ENGINEER : null
       }
     },
-    "/daily-report" : {
-      roles : ["ENGINEER", "MANAGER"],
-      designations : [  "ASSOCIATE PM", "SENIOR PM" , "PM" ,"SOFTWARE INTERN", "ASSOCIATE SOFTWARE ENGINEER", "SOFTWARE ENGINEER", "SENIOR SOFTWARE ENGINEER", "PRINCIPAL SOFTWARE ENGINEER", "TEAM LEAD"],
-      permissions : ["read:project"],
-      scope : {
-        ENGINEER : null,
-        MANAGER : null,
-      }
-    },
     "/daily-reports" : {
       roles : ["EXECUTIVE", "MANAGER"],
       designations : [  "ASSOCIATE PM", "SENIOR PM" , "PM" , "CEO", "DIRECTOR"],
@@ -153,6 +144,24 @@ export const ACCESS_CONTROL: AccessControlConfig = {
         HR : null,
         EXECUTIVE : null,
         MANAGER : "underManager"
+      }
+    },
+    InternalProject : {
+      roles : ["EXECUTIVE", "OPERATIONS"],
+      designations : ["OP EXECUTIVE", "OP MANAGER", "CEO", "DIRECTOR"],
+      permissions : ["all:project"],
+      scope : {
+        EXECUTIVE : null,
+        OPERATIONS : null,
+      }
+    },
+    Holiday : {
+      roles : ["EXECUTIVE", "HR"],
+      designations : ["CEO", "DIRECTOR", "HR EXECUTIVE", "HR ASSOCIATE MANAGER", "HR MANAGER"],
+      permissions : ["all:project"],
+      scope : {
+        EXECUTIVE : null,
+        HR : null,
       }
     }
   },

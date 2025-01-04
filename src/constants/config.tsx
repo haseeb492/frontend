@@ -65,6 +65,12 @@ export const SIDEBAR_ITEMS = [
     name: "hr-annoucements",
     path: "/hr-annoucements",
   },
+  {
+    title: "Public Holidays",
+    icon: "ic:outline-holiday-village",
+    name: "Public Holidays",
+    path: "/public-holidays",
+  },
 ];
 
 export const PROTECTED_ROUTES = [
@@ -80,4 +86,5 @@ export const PROTECTED_ROUTES = [
   "/daily-report",
   "/report",
   "/daily-reports",
+  "/public-holidays",
 ];

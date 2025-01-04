@@ -32,6 +32,7 @@ import { AxiosError } from "axios";
 import withAuthorization from "@/HOC/withAuthorization";
 import { ACCESS_CONTROL } from "@/constants/accessControlConfig";
 import HeaderCard from "@/Components/HeaderCard";
+import CircularLoader from "@/Components/Common/CircularLoader";
 
 type userProps = {
   _id: string;
@@ -169,38 +170,43 @@ const Page = () => {
 
       {/* Responsive container for the table */}
       <div className="overflow-x-auto mt-lg">
-        {isLoading && <Loader />}
-        <Table className="min-w-full">
-          <TableHeader>
-            <TableRow className="truncate">
-              {tableColumns?.map((column) => (
-                <TableHead key={column.value}>{column.label}</TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {getAllUsers?.users && getAllUsers.users.length > 0 ? (
-              getAllUsers.users.map((user: userProps) => (
-                <TableRow
-                  key={user?._id}
-                  className="truncate cursor-pointer "
-                  onClick={() => handleRowClick(user._id)}
-                >
-                  <TableCell>{user?.name}</TableCell>
-                  <TableCell>{user?.email}</TableCell>
-                  <TableCell>{user?.role?.name}</TableCell>
-                  <TableCell>{user?.designation?.name}</TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={4} className="text-center py-4">
-                  No user found
-                </TableCell>
+        {isLoading ? (
+          <div className="flex items-center justify-center my-20">
+            <CircularLoader size={40} />
+          </div>
+        ) : (
+          <Table className="min-w-full">
+            <TableHeader>
+              <TableRow className="truncate">
+                {tableColumns?.map((column) => (
+                  <TableHead key={column.value}>{column.label}</TableHead>
+                ))}
               </TableRow>
-            )}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {getAllUsers?.users && getAllUsers.users.length > 0 ? (
+                getAllUsers.users.map((user: userProps) => (
+                  <TableRow
+                    key={user?._id}
+                    className="truncate cursor-pointer "
+                    onClick={() => handleRowClick(user._id)}
+                  >
+                    <TableCell>{user?.name}</TableCell>
+                    <TableCell>{user?.email}</TableCell>
+                    <TableCell>{user?.role?.name}</TableCell>
+                    <TableCell>{user?.designation?.name}</TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center py-4">
+                    No user found
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        )}
         {!isManagerScope && getAllUsers && (
           <Pagination
             currentPage={currentPage}

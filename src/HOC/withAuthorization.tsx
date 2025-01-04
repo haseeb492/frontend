@@ -42,13 +42,13 @@ const withAuthorization = (
       }
     }, [user, resource, type, router, isUserLoaded]);
 
-    if (!isUserLoaded) {
-      return <Loader />;
-    }
+    // if (!isUserLoaded) {
+    //   return <Loader />;
+    // }
 
-    if (isAuthorized === null && user && user._id) {
-      return <Loader />;
-    }
+    // if (isAuthorized === null && user && user._id) {
+    //   return <Loader />;
+    // }
 
     return isAuthorized ? <WrappedComponent {...props} /> : null;
   };

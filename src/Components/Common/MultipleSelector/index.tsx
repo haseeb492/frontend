@@ -115,12 +115,12 @@ export const MultipleSelector: React.FC<MultipleSelectorProps> = ({
           </ShadcnButton>
         </PopoverTrigger>
         {!disabled && (
-          <PopoverContent className="w-full p-0">
+          <PopoverContent className="w-full p-0 z-50 ">
             <Command>
               <CommandInput placeholder="Search users..." />
               <CommandEmpty>No users found.</CommandEmpty>
               <CommandList>
-                <CommandGroup>
+                <CommandGroup className="z-10">
                   {users.map((user) => (
                     <CommandItem
                       key={user._id}

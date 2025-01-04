@@ -182,7 +182,7 @@ const Page = ({ params }: { params: { reportId: string } }) => {
             </div>
 
             <div className="flex items-center justify-end mt-4">
-              {!dailyReport?.isSubmitted && (
+              {dailyReport?.isSubmitted === false && (
                 <Button
                   title={
                     submitReportMutation.isPending

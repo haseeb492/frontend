@@ -139,7 +139,28 @@ export const personalInfoSchema = z.object({
     }
   });
 
+  export const internalProjectSchema = z.object({
+    name : z.string().min(1, "Please enter name"),
+    description : z.string().min(1, "Please enter description"),
+    roles : z.array(z.string()).default([]) 
+  })
 
+  export const internalProjectDetialsSchema = z.object({
+    name : z.string().optional(),
+    description : z.string().optional(),
+    roles : z.array(z.string()).default([]) 
+  })
+
+  export const holidaySchema = z.object({
+    title : z.string().min(1, "Please enter title"),
+    date: z.date({message : "Please enter date"}),
+  });
+
+  export const holidayDetailsSchema = z.object({
+    title : z.string().min(1, "Please enter date"),
+    date : z.preprocess((arg) =>
+      (typeof arg === 'string' ? new Date(arg) : arg), z.date().nullable().optional()),   
+  })
 
 
   export const userSchema = z
