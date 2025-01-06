@@ -24,7 +24,6 @@ import { Tabs, TabsList, TabsTrigger } from "@/Components/Common/Tabs";
 import { useRouter } from "next/navigation";
 import axiosInstance from "@/AxiosInterceptor";
 import { useQuery } from "@tanstack/react-query";
-import Loader from "@/Components/Common/Loader";
 import { useDebouncedCallback } from "use-debounce";
 import Pagination from "@/Components/Common/Pagination";
 import { toast } from "@/Components/Common/Toast/use-toast";

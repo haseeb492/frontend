@@ -38,9 +38,7 @@ import useGetWorkStatusDuration from "@/hooks/use-get-work-status-duration";
 import { Icon } from "@iconify/react";
 import { DateRangePicker } from "@/Components/Common/DateRangePicker";
 import useGetAverageProductiveHours from "@/hooks/use-get-average-productive-hours";
-const HeaderCard = dynamic(() => import("@/Components/HeaderCard"), {
-  ssr: false,
-});
+import HeaderCard from "@/Components/HeaderCard";
 
 export default function Home() {
   const queryClient = useQueryClient();
