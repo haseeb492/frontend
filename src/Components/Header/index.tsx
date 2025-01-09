@@ -63,6 +63,7 @@ const Header = () => {
       toast({ title: res?.data?.message });
       queryClient.invalidateQueries({ queryKey: ["getActivityLog"] });
       queryClient.invalidateQueries({ queryKey: ["getWorkStatusDuration"] });
+      queryClient.invalidateQueries({ queryKey: ["getDailyReport"] });
       if (newStatus === "break") {
         router.push("/break");
       }

@@ -8,7 +8,7 @@ export const useSidebar = () => {
   const dispatch = useDispatch();
   const isSidebarOpen = useSelector((state: RootState) => state.sidebar);
 
-  const setIsSidebarOpen = () => {
+  const toggleSidebar = () => {
     dispatch(SET_SIDEBAR(!isSidebarOpen));
   };
 
@@ -18,9 +18,12 @@ export const useSidebar = () => {
       dispatch(SET_SIDEBAR(isLargeScreen));
     };
     handleResize();
+
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
   }, [dispatch]);
 
-  return { isSidebarOpen, setIsSidebarOpen };
+  return { isSidebarOpen, toggleSidebar };
 };

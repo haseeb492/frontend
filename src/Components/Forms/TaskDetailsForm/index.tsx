@@ -2,6 +2,7 @@
 
 import axiosInstance from "@/AxiosInterceptor";
 import Button from "@/Components/Common/Button";
+import CircularLoader from "@/Components/Common/CircularLoader";
 import {
   Form,
   FormControl,
@@ -9,7 +10,6 @@ import {
   FormItem,
 } from "@/Components/Common/Form";
 import InputField from "@/Components/Common/InputField";
-import Loader from "@/Components/Common/Loader";
 import {
   Select,
   SelectContent,
@@ -23,12 +23,13 @@ import useGetProjects from "@/hooks/use-get-projects";
 import useGetProjectsByResource from "@/hooks/use-get-projects-by-resource";
 import { taskFormSchema } from "@/lib/schemas";
 import { ApiError } from "@/lib/types";
+import { getHoursAndMinutes } from "@/lib/utils";
 import { RootState } from "@/redux/store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { z } from "zod";
 
 interface TaskDetailsFormProps {
@@ -45,7 +46,7 @@ interface RequestBodyType {
   title: string;
   description: string;
   projectId: string;
-  time: string;
+  time: number;
 }
 
 const TaskDetailsForm = ({
@@ -63,6 +64,8 @@ const TaskDetailsForm = ({
 
   const isManager = userRole === "MANAGER";
   const isEngineer = userRole === "ENGINEER";
+  const isIdleTask = title === "Idle Time";
+  const { hours, minutes } = getHoursAndMinutes(Number(time));
 
   const { projectsByresource, isLoading: isEngineerProjectsLoading } =
     useGetProjectsByResource(isEngineer, "in_progress");
@@ -97,7 +100,8 @@ const TaskDetailsForm = ({
       title: title,
       description: description,
       projectId: projectId,
-      time: time,
+      hours: hours.toString(),
+      minutes: minutes.toString(),
     },
   });
 
@@ -116,6 +120,9 @@ const TaskDetailsForm = ({
     },
     onSuccess: (res) => {
       queryClient.invalidateQueries({ queryKey: ["getDailyReport"] });
+      queryClient.invalidateQueries({
+        queryKey: ["getAvailableProductiveDuration"],
+      });
       onUpdateSuccess?.();
       toast({
         title: res?.data?.message,
@@ -143,15 +150,20 @@ const TaskDetailsForm = ({
     if (dirtyFields.projectId) {
       formattedPayload.projectId = values.projectId;
     }
-    if (dirtyFields.time) {
-      formattedPayload.time = values.time;
+    if (dirtyFields.hours || dirtyFields.minutes) {
+      formattedPayload.time =
+        Number(values.hours) * 60 + Number(values.minutes);
     }
 
     mutation.mutate(formattedPayload as RequestBodyType);
   };
 
   if (isProjectsLoading || isEngineerProjectsLoading) {
-    return <Loader />;
+    return (
+      <div className="flex items-center justify-center mb-10">
+        <CircularLoader />
+      </div>
+    );
   }
   return (
     <>
@@ -168,7 +180,7 @@ const TaskDetailsForm = ({
                 <FormItem className="flex justify-center items-center">
                   <FormControl className="grow">
                     <InputField
-                      disabled={!isLoggedIn}
+                      disabled={!isLoggedIn || isIdleTask}
                       value={field.value}
                       onChange={field.onChange}
                       errorMessage={form.formState.errors.title?.message}
@@ -192,7 +204,7 @@ const TaskDetailsForm = ({
                   <FormControl className="grow">
                     <>
                       <textarea
-                        disabled={!isLoggedIn}
+                        disabled={!isLoggedIn || isIdleTask}
                         id="description"
                         ref={(textarea) => {
                           if (textarea) {
@@ -231,72 +243,89 @@ const TaskDetailsForm = ({
 
             <div className="grid grid-cols-2 gap-2">
               <FormField
-                name="projectId"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem className="flex justify-center items-center">
-                    <FormControl className="grow ">
-                      <Select
-                        disabled={!isLoggedIn}
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
-                        <SelectTrigger
-                          label="Project:"
-                          errorMessage={
-                            form.formState.errors.projectId?.message
-                          }
-                          className="text-black"
-                        >
-                          <SelectValue placeholder="Select a project" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {allProjects ? (
-                            allProjects.map(
-                              (project: { name: string; _id: string }) => {
-                                return (
-                                  <SelectItem
-                                    key={project._id}
-                                    value={project._id}
-                                  >
-                                    {project.name}
-                                  </SelectItem>
-                                );
-                              }
-                            )
-                          ) : (
-                            <SelectItem value="-" aria-readonly>
-                              No projects found
-                            </SelectItem>
-                          )}
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                name="time"
+                name="hours"
                 control={form.control}
                 render={({ field }) => (
                   <FormItem className="flex justify-center items-center">
                     <FormControl className="grow">
                       <InputField
-                        disabled={!isLoggedIn}
+                        disabled={!isLoggedIn || isIdleTask}
                         className="text-black"
                         value={field.value}
                         onChange={field.onChange}
                         type="number"
-                        errorMessage={form.formState.errors.time?.message}
-                        label="Time:"
+                        errorMessage={form.formState.errors.hours?.message}
+                        label="Hours:"
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                name="minutes"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem className="flex justify-center items-center">
+                    <FormControl className="grow">
+                      <InputField
+                        disabled={!isLoggedIn || isIdleTask}
+                        className="text-black"
+                        value={field.value}
+                        onChange={field.onChange}
+                        type="number"
+                        errorMessage={form.formState.errors.minutes?.message}
+                        label="Minutes:"
                       />
                     </FormControl>
                   </FormItem>
                 )}
               />
             </div>
+            <FormField
+              name="projectId"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem className="flex justify-center items-center">
+                  <FormControl className="grow ">
+                    <Select
+                      disabled={!isLoggedIn || isIdleTask}
+                      value={field.value}
+                      onValueChange={field.onChange}
+                    >
+                      <SelectTrigger
+                        label="Project:"
+                        errorMessage={form.formState.errors.projectId?.message}
+                        className="text-black"
+                      >
+                        <SelectValue placeholder="Select a project" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {allProjects ? (
+                          allProjects.map(
+                            (project: { name: string; _id: string }) => {
+                              return (
+                                <SelectItem
+                                  key={project._id}
+                                  value={project._id}
+                                >
+                                  {project.name}
+                                </SelectItem>
+                              );
+                            }
+                          )
+                        ) : (
+                          <SelectItem value="-" aria-readonly>
+                            No projects found
+                          </SelectItem>
+                        )}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
             <div className="flex w-full justify-end">
-              {isLoggedIn && (
+              {isLoggedIn && !isIdleTask && (
                 <Button
                   title={mutation.isPending ? "Loading..." : "Save"}
                   disabled={mutation.isPending || !form.formState.isDirty}

@@ -90,6 +90,13 @@ export const formatDuration = (duration: number) => {
   return `${String(hours).padStart(2, '0')}h ${String(minutes).padStart(2, '0')}m`;
 };
 
+export const getHoursAndMinutes = (duration : number) => {
+  const hours = Math.floor(duration / 60);
+  const minutes = Math.floor(duration % 60);
+
+  return {hours , minutes}
+}
+
 
 export const  formatTime = (utcTimeString : string) => {
   const date = new Date(utcTimeString);

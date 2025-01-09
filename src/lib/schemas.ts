@@ -195,6 +195,7 @@ export const personalInfoSchema = z.object({
     title : z.string().min(1, "Title is required"),
     description : z.string().min(1, "Description is required"),
     projectId : z.string().min(1, "Project is required"),
-    time : z.string().min(1, "Please enter time")
-    
+    // time : z.string().min(1, "Please enter time")
+    hours : z.string().default("0"),
+    minutes : z.string().default("0"),
   })

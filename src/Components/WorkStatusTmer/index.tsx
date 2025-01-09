@@ -3,13 +3,13 @@ import { useEffect, useState } from "react";
 
 interface WorkStatusTimerProps {
   initialTimeInMinutes: number;
-  status: string;
+  status?: string;
   isBreak?: boolean;
 }
 
 const WorkStatusTimer: React.FC<WorkStatusTimerProps> = ({
   initialTimeInMinutes,
-  status,
+  status = "",
   isBreak = false,
 }) => {
   const [timeInMinutes, setTimeInMinutes] = useState(initialTimeInMinutes);
@@ -40,7 +40,7 @@ const WorkStatusTimer: React.FC<WorkStatusTimerProps> = ({
     };
   }, [status, isBreak]);
 
-  return <span>{formatDuration(timeInMinutes)}</span>;
+  return <span className="">{formatDuration(timeInMinutes)}</span>;
 };
 
 export default WorkStatusTimer;

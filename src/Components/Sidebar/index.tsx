@@ -1,91 +1,57 @@
 "use client";
 
-import Image from "next/image";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTrigger,
-} from "../Common/Sheet";
-import logo from "../../assets/zealtouch-logo.png";
-import { DialogClose, DialogTitle } from "@radix-ui/react-dialog";
-import { PROTECTED_ROUTES, SIDEBAR_ITEMS } from "@/constants/config";
-import { Icon } from "@iconify/react";
 import { usePathname } from "next/navigation";
-import Link from "next/link";
-import { useSidebar } from "@/hooks/use-sidebar";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-import { checkAccess } from "@/lib/utils";
+import { PROTECTED_ROUTES } from "@/constants/config";
+import { useSidebar } from "@/hooks/use-sidebar";
+import SidebarContent from "../SidebarContent";
 
 export function Sidebar() {
-  const { isSidebarOpen, setIsSidebarOpen } = useSidebar();
+  const { isSidebarOpen, toggleSidebar } = useSidebar();
   const pathname = usePathname();
   const user = useSelector((state: RootState) => state.user);
 
+  // If route is not protected, don’t show the sidebar
   const firstSegment = pathname.split("/")[1];
   const isProtectedRoute = PROTECTED_ROUTES.some(
     (route) => route === `/${firstSegment}`
   );
-
   if (!isProtectedRoute) return null;
 
   return (
-    <div className={`${isSidebarOpen && "lg:w-[320px]"}`}>
-      <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
-        <SheetTrigger asChild />
-        <SheetContent side="left" className="overflow-auto">
-          <SheetHeader>
-            <DialogTitle>
-              <Image
-                src={logo}
-                alt="zealtouch-logo"
-                priority
-                className="w-auto h-auto"
-              />
-            </DialogTitle>
-            <DialogClose>
-              <Icon
-                icon="gravity-ui:circle-chevron-left"
-                width={24}
-                height={24}
-                color="#175CFF"
-              />
-            </DialogClose>
-          </SheetHeader>
-          <div className="mt-lg">
-            {SIDEBAR_ITEMS?.map((item) => {
-              // Determine if the user has access to this route
-              const hasAccess = checkAccess(user, item.path, "route");
+    <>
+      <div
+        className={`hidden lg:flex flex-col transition-all duration-300 ease-in-out bg-white border border-gray-300
+          shadow-md shadow-gray-400 
+          ${isSidebarOpen ? "w-[320px] p-5" : "w-0"}
+          overflow-y-auto
+        `}
+      >
+        <SidebarContent />
+      </div>
 
-              if (!hasAccess) {
-                return null; // Do not render the item if user lacks access
-              }
+      {/* for small screen */}
 
-              const activeItem = pathname === item.path;
-              return (
-                <div
-                  key={item?.name}
-                  className="flex flex-col items-start w-full gap-sm"
-                >
-                  <div
-                    className={`p-md hover:bg-primary hover:bg-opacity-15 w-full ${
-                      activeItem ? "bg-primary text-white" : ""
-                    }`}
-                  >
-                    <Link href={item.path}>
-                      <div className="flex items-center gap-sm">
-                        <Icon icon={item?.icon} width={24} height={24} />
-                        <span>{item?.title}</span>
-                      </div>
-                    </Link>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </SheetContent>
-      </Sheet>
-    </div>
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+          onClick={toggleSidebar}
+        />
+      )}
+
+      <div
+        className={`
+          fixed top-0 left-0 z-50 flex flex-col p-5 bg-white border-r border-gray-300 shadow-md shadow-gray-400
+          transform transition-transform duration-300 ease-in-out lg:hidden h-screen overflow-y-auto
+
+          ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
+
+        `}
+        style={{ width: 320 }}
+      >
+        <SidebarContent />
+      </div>
+    </>
   );
 }

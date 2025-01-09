@@ -4,18 +4,11 @@ import dynamic from "next/dynamic";
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-const ActivityLogCard = dynamic(() => import("@/Components/ActivityLogCard"), {
-  ssr: false,
-});
+
 import { DateRangePicker } from "@/Components/Common/DateRangePicker";
 import useGetActivityLogs from "@/hooks/use-get-activity-logs";
 import { checkAccess, formatDate, getLastMonthDateRange } from "@/lib/utils";
-const CircularLoader = dynamic(
-  () => import("@/Components/Common/CircularLoader"),
-  {
-    ssr: false,
-  }
-);
+
 import { ACCESS_CONTROL } from "@/constants/accessControlConfig";
 import UseGetAllRoles from "@/hooks/use-get-all-roles";
 import useGetUsers from "@/hooks/use-get-users";
@@ -27,9 +20,9 @@ import {
   SelectValue,
 } from "@/Components/Common/SelectionField";
 import useGetAllUsers from "@/hooks/use-get-all-users";
-const HeaderCard = dynamic(() => import("@/Components/HeaderCard"), {
-  ssr: false,
-});
+import HeaderCard from "@/Components/HeaderCard";
+import CircularLoader from "@/Components/Common/CircularLoader";
+import ActivityLogCard from "@/Components/ActivityLogCard";
 
 interface checkInOutHistoryType {
   checkInTime?: Date | undefined;

@@ -1,16 +1,20 @@
 "use client";
 
 import axiosInstance from "@/AxiosInterceptor";
+import AvailableProductiveHours from "@/Components/AvailableProductiveHours";
 import Button from "@/Components/Common/Button";
 import Loader from "@/Components/Common/Loader";
 import { Modal } from "@/Components/Common/Modal";
 import { ShadcnButton } from "@/Components/Common/ShadcnButton";
 import { toast } from "@/Components/Common/Toast/use-toast";
+import DailyQuote from "@/Components/DailyQuote";
 import AddTaskForm from "@/Components/Forms/AddTaskForm";
 import TaskDetailsForm from "@/Components/Forms/TaskDetailsForm";
 import HeaderCard from "@/Components/HeaderCard";
+import useGetAvailableProductiveDuration from "@/hooks/use-get-available-productive-duration";
 import useGetDailyReport from "@/hooks/use-get-daily-report";
 import { ApiError } from "@/lib/types";
+import { formatDuration } from "@/lib/utils";
 import { SET_MODAL } from "@/redux/slices/modalSlice";
 import { RootState } from "@/redux/store";
 import { useMutation } from "@tanstack/react-query";
@@ -41,6 +45,13 @@ const Page = ({ params }: { params: { reportId: string } }) => {
     user?._id ? true : false,
     params.reportId
   );
+
+  const { productiveDuration, isLoading: isProductiveDurationLoading } =
+    useGetAvailableProductiveDuration(
+      dailyReport?.report?._id,
+      user?._id,
+      user?._id ? true : false
+    );
 
   const submitReportMutation = useMutation({
     mutationFn: (reportId: string) => {
@@ -88,7 +99,7 @@ const Page = ({ params }: { params: { reportId: string } }) => {
 
   return (
     <div className="w-full">
-      {isLoading ? (
+      {isLoading || isProductiveDurationLoading ? (
         <Loader />
       ) : (
         <>
@@ -118,71 +129,80 @@ const Page = ({ params }: { params: { reportId: string } }) => {
               />
             </Modal>
           )}
-          <div
-            className="flex flex-col p-4 border border-gray-300 shadow-md
-       shadow-gray-400 mt-5 rounded-[5px]"
-          >
-            <div className="flex justify-between items-center">
-              <div className="">
-                <h2 className="text-xl">
-                  {new Date(dailyReport?.report?.date).toLocaleDateString(
-                    "en-US",
-                    {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    }
-                  )}
-                </h2>
-                {isLoggedIn && (
+          <div className="flex w-full gap-x-4 my-5">
+            <div
+              className="flex flex-col p-4 border border-gray-300 shadow-md shadow-gray-400
+            rounded-[5px] w-[80%]
+            "
+            >
+              <div className="flex justify-between items-center">
+                <div>
+                  <h2 className="text-xl">
+                    {new Date(dailyReport?.report?.date).toLocaleDateString(
+                      "en-US",
+                      {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      }
+                    )}
+                  </h2>
                   <span className="text-md text-slate-500">
-                    Review or edit your report
+                    Modify and add new tasks to your daily report
                   </span>
-                )}
-              </div>
-              <div className="flex gap-2 items-center">
-                {isLoggedIn && (
+                </div>
+                <div className="flex gap-2 items-center">
                   <ShadcnButton
                     className="w-20"
                     onClick={() => dispatch(SET_MODAL(true))}
                   >
                     <PlusIcon className="text-white min-h-6" />
                   </ShadcnButton>
-                )}
+                </div>
               </div>
-            </div>
-            <div className="grid grid-cols-4 gap-4 w-full justify-center items-center mt-10">
-              {dailyReport?.tasks?.length > 0 ? (
-                dailyReport.tasks.map((task: any) => (
-                  <div
-                    key={task._id}
-                    className="flex justify-center p-4 items-center w-auto h-auto min-h-20
-                 min-w-40 border border-gray-300 shadow-md shadow-gray-400 rounded-md cursor-pointer"
-                    onClick={() => {
-                      setSelectedTask({
-                        taskId: task._id,
-                        title: task.title,
-                        description: task.description,
-                        time: task.time.toString(),
-                        projectId: task.project,
-                      });
-                      dispatch(SET_MODAL(true));
-                    }}
-                  >
-                    <span className="text-slate-600 text-lg ">
-                      {task.title}
-                    </span>
-                  </div>
-                ))
-              ) : (
-                <span className="text-slate-500 text-md text-center mt-5">
-                  No tasks found
-                </span>
-              )}
-            </div>
 
-            <div className="flex items-center justify-end mt-4">
-              {dailyReport?.isSubmitted === false && (
+              <div className="flex-1 mt-10">
+                <div className="grid grid-cols-2 gap-4 w-[80%] justify-center items-center">
+                  {dailyReport?.tasks?.length > 0 ? (
+                    dailyReport.tasks.map((task: any) => (
+                      <div
+                        key={task._id}
+                        className="
+                        flex justify-center p-4 items-center 
+                        w-auto h-auto min-h-20 min-w-40
+                        border border-gray-300 
+                        shadow-md shadow-gray-400 
+                        rounded-md 
+                        cursor-pointer
+                      "
+                        onClick={() => {
+                          setSelectedTask({
+                            taskId: task._id,
+                            title: task.title,
+                            description: task.description,
+                            time: task.time.toString(),
+                            projectId: task.project,
+                          });
+                          dispatch(SET_MODAL(true));
+                        }}
+                      >
+                        <span className="text-primary text-lg">
+                          {task.title}{" "}
+                          <span className="text-slate-600 text-lg">
+                            - {formatDuration(task.time)}
+                          </span>
+                        </span>
+                      </div>
+                    ))
+                  ) : (
+                    <span className="text-slate-500 text-md text-center mt-5">
+                      No tasks found
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex justify-end mt-4">
                 <Button
                   title={
                     submitReportMutation.isPending
@@ -192,7 +212,14 @@ const Page = ({ params }: { params: { reportId: string } }) => {
                   disabled={submitReportMutation.isPending}
                   onClick={handleReportSubmit}
                 />
-              )}
+              </div>
+            </div>
+
+            <div className="flex flex-col items-center w-[20%] gap-y-2">
+              <DailyQuote />
+              <AvailableProductiveHours
+                availableProductiveDuration={productiveDuration}
+              />
             </div>
           </div>
         </>

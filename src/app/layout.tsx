@@ -17,13 +17,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="h-screen w-full">
+      <body className="h-screen w-full overflow-hidden">
         <ReactQueryProvider>
           <div className="flex h-screen w-full">
             <Sidebar />
-            <div className="flex flex-col flex-grow">
+            <div className="flex flex-col flex-grow overflow-y-auto">
               <Header />
-              <main className="flex-grow p-4">{children}</main>
+              <main className="p-4">{children}</main>
             </div>
           </div>
         </ReactQueryProvider>
