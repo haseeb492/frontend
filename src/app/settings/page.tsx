@@ -2,6 +2,7 @@
 
 import axiosInstance from "@/AxiosInterceptor";
 import Button from "@/Components/Common/Button";
+import CircularLoader from "@/Components/Common/CircularLoader";
 import {
   Form,
   FormControl,
@@ -9,7 +10,6 @@ import {
   FormItem,
 } from "@/Components/Common/Form";
 import InputField from "@/Components/Common/InputField";
-import Loader from "@/Components/Common/Loader";
 import PasswordInputField from "@/Components/Common/PasswordInputField";
 import { toast } from "@/Components/Common/Toast/use-toast";
 import HeaderCard from "@/Components/HeaderCard";
@@ -69,74 +69,77 @@ const Page = () => {
     mutation.mutate(values);
   };
 
-  if (isLoading) {
-    return <Loader />;
-  }
   return (
     <div className="w-full">
       <HeaderCard title="Settings" subTitle="Edit your account settings" />
-      <div className="flex  justify-start items-start w-full gap-md mt-lg">
-        <div className="flex flex-col">
-          <InputField value={user?.email} disabled={true} label="Email:" />
-          <InputField
-            value={personalInfo?.personalInfo?.slackId}
-            disabled={true}
-            label="SlackId:"
-          />
+      {isLoading ? (
+        <div className="flex items-center justify-center mt-10">
+          <CircularLoader />
         </div>
-        <div className="flex flex-col">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-              <FormField
-                name="oldPassword"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem className="w-80">
-                    <FormControl>
-                      <PasswordInputField
-                        className=""
-                        value={field.value}
-                        onChange={field.onChange}
-                        errorMessage={
-                          form.formState.errors.oldPassword?.message
-                        }
-                        valid={false}
-                        label="Old Password:"
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                name="newPassword"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem className="w-80 mt-2">
-                    <FormControl>
-                      <PasswordInputField
-                        className=""
-                        value={field.value}
-                        onChange={field.onChange}
-                        valid={false}
-                        errorMessage={
-                          form.formState.errors.newPassword?.message
-                        }
-                        label="New Password:"
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <Button
-                title={mutation.isPending ? "Loading..." : "Reset Password"}
-                disabled={mutation.isPending}
-                type="submit"
-                className="w-full max-w-[400px] my-md"
-              />
-            </form>
-          </Form>
+      ) : (
+        <div className="flex  justify-start items-start w-full gap-md mt-lg">
+          <div className="flex flex-col">
+            <InputField value={user?.email} disabled={true} label="Email:" />
+            <InputField
+              value={personalInfo?.personalInfo?.slackId}
+              disabled={true}
+              label="SlackId:"
+            />
+          </div>
+          <div className="flex flex-col">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)}>
+                <FormField
+                  name="oldPassword"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem className="w-80">
+                      <FormControl>
+                        <PasswordInputField
+                          className=""
+                          value={field.value}
+                          onChange={field.onChange}
+                          errorMessage={
+                            form.formState.errors.oldPassword?.message
+                          }
+                          valid={false}
+                          label="Old Password:"
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  name="newPassword"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem className="w-80 mt-2">
+                      <FormControl>
+                        <PasswordInputField
+                          className=""
+                          value={field.value}
+                          onChange={field.onChange}
+                          valid={false}
+                          errorMessage={
+                            form.formState.errors.newPassword?.message
+                          }
+                          label="New Password:"
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <Button
+                  title={mutation.isPending ? "Loading..." : "Reset Password"}
+                  disabled={mutation.isPending}
+                  type="submit"
+                  className="w-full max-w-[400px] my-md"
+                />
+              </form>
+            </Form>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

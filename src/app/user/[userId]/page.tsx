@@ -1,6 +1,6 @@
 "use client";
 
-import Loader from "@/Components/Common/Loader";
+import CircularLoader from "@/Components/Common/CircularLoader";
 import { Tabs, TabsList, TabsTrigger } from "@/Components/Common/Tabs";
 import PersonalInfoForm from "@/Components/Forms/PersonalInfoForm";
 import ProfessionalInfoForm from "@/Components/Forms/ProfessionalInfoForm";
@@ -49,7 +49,9 @@ const Page = ({ params }: { params: { userId: string } }) => {
       </div>
       {selectedTab === "personal" ? (
         isPersonalInfoLoading ? (
-          <Loader />
+          <div className="flex items-center justify-center mt-10">
+            <CircularLoader size={40} />
+          </div>
         ) : (
           <PersonalInfoForm
             isLoggedInUser={isLoggedInUser}
@@ -57,7 +59,9 @@ const Page = ({ params }: { params: { userId: string } }) => {
           />
         )
       ) : isProfessionalInfoLoading ? (
-        <Loader />
+        <div className="flex items-center justify-center mt-10">
+          <CircularLoader size={40} />
+        </div>
       ) : (
         <ProfessionalInfoForm
           isLoggedInUser={isLoggedInUser}

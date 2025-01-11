@@ -9,7 +9,8 @@ import Button from "../Common/Button";
 import { useMutation } from "@tanstack/react-query";
 import axiosInstance from "@/AxiosInterceptor";
 import { toast } from "../Common/Toast/use-toast";
-import Loader from "../Common/Loader";
+import CircularLoader from "../Common/CircularLoader";
+import { ApiError } from "@/lib/types";
 
 type SetPasswordProp = {
   userId: string;
@@ -52,8 +53,7 @@ const SetPassword = ({ userId }: SetPasswordProp) => {
       });
       setIsSetPassword(false);
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    onError: (error: any) => {
+    onError: (error: ApiError) => {
       toast({
         title: error?.response?.data?.error || "Something went wrong",
         variant: "destructive",
@@ -69,7 +69,11 @@ const SetPassword = ({ userId }: SetPasswordProp) => {
   return (
     <Modal open={isSetPassword} className="bg-gray-300" title="Set Password">
       <div>
-        {mutation.isPending && <Loader />}
+        {mutation.isPending && (
+          <div className="flex items-center justify-center mt-10">
+            <CircularLoader />
+          </div>
+        )}
         <Form {...setPasswordForm}>
           <form
             onSubmit={setPasswordForm.handleSubmit(onSubmit)}
@@ -117,9 +121,8 @@ const SetPassword = ({ userId }: SetPasswordProp) => {
 
             <Button
               title="Reset"
-              // title={mutation.isPending ? "Loading..." : "Log In"}
               className="w-full max-w-[400px] my-md"
-              // disabled={mutation.isPending}
+              disabled={mutation.isPending}
             />
           </form>
         </Form>

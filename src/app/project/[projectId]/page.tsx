@@ -1,6 +1,6 @@
 "use client";
 
-import Loader from "@/Components/Common/Loader";
+import CircularLoader from "@/Components/Common/CircularLoader";
 import ProjectDetailsForm from "@/Components/Forms/ProjectDetailsForm";
 import HeaderCard from "@/Components/HeaderCard";
 import useGetProject from "@/hooks/use-get-project";
@@ -13,7 +13,9 @@ const Page = ({ params }: { params: { projectId: string } }) => {
     <div className="">
       <HeaderCard title="Project Info" subTitle="Review project details" />
       {isLoading ? (
-        <Loader />
+        <div className="flex items-center justify-center mt-10">
+          <CircularLoader size={40} />
+        </div>
       ) : (
         <ProjectDetailsForm projectId={params.projectId} />
       )}

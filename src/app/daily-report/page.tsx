@@ -3,7 +3,7 @@
 import axiosInstance from "@/AxiosInterceptor";
 import AvailableProductiveHours from "@/Components/AvailableProductiveHours";
 import Button from "@/Components/Common/Button";
-import Loader from "@/Components/Common/Loader";
+import CircularLoader from "@/Components/Common/CircularLoader";
 import { Modal } from "@/Components/Common/Modal";
 import { ShadcnButton } from "@/Components/Common/ShadcnButton";
 import { toast } from "@/Components/Common/Toast/use-toast";
@@ -94,10 +94,6 @@ const Page = () => {
     closeTaskModal();
   };
 
-  if (isLoading || isActivityLogLoading || isProductiveDurationLoading) {
-    return <Loader />;
-  }
-
   return (
     <div className="w-full">
       {isModalOpen && !selectedTask && (
@@ -129,46 +125,52 @@ const Page = () => {
         title="Today's Report"
         subTitle="Manage your daily report & tasks"
       />
-      {!isTodaysReportSubmitted && dailyReport?.report ? (
-        <div className="flex w-full gap-x-4 my-5">
-          <div
-            className="flex flex-col p-4 border border-gray-300 shadow-md shadow-gray-400
+      {isLoading || isActivityLogLoading || isProductiveDurationLoading ? (
+        <div className="flex items-center justify-center mt-10">
+          <CircularLoader size={40} />
+        </div>
+      ) : (
+        <>
+          {!isTodaysReportSubmitted && dailyReport?.report ? (
+            <div className="flex w-full gap-x-4 my-5">
+              <div
+                className="flex flex-col p-4 border border-gray-300 shadow-md shadow-gray-400
             rounded-[5px] w-[80%]
             "
-          >
-            <div className="flex justify-between items-center">
-              <div>
-                <h2 className="text-xl">
-                  {new Date(dailyReport?.report?.date).toLocaleDateString(
-                    "en-US",
-                    {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    }
-                  )}
-                </h2>
-                <span className="text-md text-slate-500">
-                  Modify and add new tasks to your daily report
-                </span>
-              </div>
-              <div className="flex gap-2 items-center">
-                <ShadcnButton
-                  className="w-20"
-                  onClick={() => dispatch(SET_MODAL(true))}
-                >
-                  <PlusIcon className="text-white min-h-6" />
-                </ShadcnButton>
-              </div>
-            </div>
+              >
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h2 className="text-xl">
+                      {new Date(dailyReport?.report?.date).toLocaleDateString(
+                        "en-US",
+                        {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        }
+                      )}
+                    </h2>
+                    <span className="text-md text-slate-500">
+                      Modify and add new tasks to your daily report
+                    </span>
+                  </div>
+                  <div className="flex gap-2 items-center">
+                    <ShadcnButton
+                      className="w-20"
+                      onClick={() => dispatch(SET_MODAL(true))}
+                    >
+                      <PlusIcon className="text-white min-h-6" />
+                    </ShadcnButton>
+                  </div>
+                </div>
 
-            <div className="flex-1 mt-10">
-              <div className="grid grid-cols-2 gap-4 w-[80%] justify-center items-center">
-                {dailyReport?.tasks?.length > 0 ? (
-                  dailyReport.tasks.map((task: any) => (
-                    <div
-                      key={task._id}
-                      className="
+                <div className="flex-1 mt-10">
+                  <div className="grid grid-cols-2 gap-4 w-[80%] justify-center items-center">
+                    {dailyReport?.tasks?.length > 0 ? (
+                      dailyReport.tasks.map((task: any) => (
+                        <div
+                          key={task._id}
+                          className="
                         flex justify-center p-4 items-center 
                         w-auto h-auto min-h-20 min-w-40
                         border border-gray-300 
@@ -176,68 +178,71 @@ const Page = () => {
                         rounded-md 
                         cursor-pointer
                       "
-                      onClick={() => {
-                        setSelectedTask({
-                          taskId: task._id,
-                          title: task.title,
-                          description: task.description,
-                          time: task.time.toString(),
-                          projectId: task.project,
-                        });
-                        dispatch(SET_MODAL(true));
-                      }}
-                    >
-                      <span className="text-primary text-lg">
-                        {task.title}{" "}
-                        <span className="text-slate-600 text-lg">
-                          - {formatDuration(task.time)}
-                        </span>
+                          onClick={() => {
+                            setSelectedTask({
+                              taskId: task._id,
+                              title: task.title,
+                              description: task.description,
+                              time: task.time.toString(),
+                              projectId: task.project,
+                            });
+                            dispatch(SET_MODAL(true));
+                          }}
+                        >
+                          <span className="text-primary text-lg">
+                            {task.title}{" "}
+                            <span className="text-slate-600 text-lg">
+                              - {formatDuration(task.time)}
+                            </span>
+                          </span>
+                        </div>
+                      ))
+                    ) : (
+                      <span className="text-slate-500 text-md text-center mt-5">
+                        No tasks found
                       </span>
-                    </div>
-                  ))
-                ) : (
-                  <span className="text-slate-500 text-md text-center mt-5">
-                    No tasks found
-                  </span>
-                )}
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex justify-end mt-4">
+                  <Button
+                    title={
+                      submitReportMutation.isPending
+                        ? "Loading..."
+                        : "Submit Report"
+                    }
+                    disabled={submitReportMutation.isPending}
+                    onClick={handleReportSubmit}
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center w-[20%] gap-y-2">
+                <DailyQuote />
+                <AvailableProductiveHours
+                  availableProductiveDuration={productiveDuration}
+                  status={getLatestStatus(activityLog?.workStatusHistory)}
+                />
               </div>
             </div>
-
-            <div className="flex justify-end mt-4">
-              <Button
-                title={
-                  submitReportMutation.isPending
-                    ? "Loading..."
-                    : "Submit Report"
-                }
-                disabled={submitReportMutation.isPending}
-                onClick={handleReportSubmit}
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-col items-center w-[20%] gap-y-2">
-            <DailyQuote />
-            <AvailableProductiveHours
-              availableProductiveDuration={productiveDuration}
-              status={getLatestStatus(activityLog?.workStatusHistory)}
-            />
-          </div>
-        </div>
-      ) : (
-        <div
-          className="
+          ) : (
+            <div
+              className="
             flex items-center justify-center h-20 p-4
             border border-gray-300 
             shadow-md shadow-gray-400 
             mt-5 rounded-[5px]
           "
-        >
-          <span className="text-gray-600 text-lg">
-            You've submitted the report
-          </span>
-        </div>
+            >
+              <span className="text-gray-600 text-lg">
+                You've submitted the report
+              </span>
+            </div>
+          )}
+        </>
       )}
+
       <DailyReports />
     </div>
   );

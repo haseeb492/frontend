@@ -10,11 +10,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/Components/Common/Table";
-import Loader from "@/Components/Common/Loader";
 import { capitalizeWords } from "@/lib/utils";
 import StatusBadge from "@/Components/Common/StatusBadge";
-import { useRouter } from "next/navigation";
 import HeaderCard from "@/Components/HeaderCard";
+import CircularLoader from "@/Components/Common/CircularLoader";
 
 type ProjectProps = {
   _id: string;
@@ -30,13 +29,14 @@ const tableColumns = [
 ];
 
 const Page = () => {
-  const router = useRouter();
   const { projectsByresource, isLoading } = useGetProjectsByResource();
 
   return (
     <>
       {isLoading ? (
-        <Loader />
+        <div className="flex items-center justify-center mt-10">
+          <CircularLoader size={40} />
+        </div>
       ) : (
         <div className="overflow-x-auto">
           <HeaderCard
@@ -58,7 +58,6 @@ const Page = () => {
                   <TableRow
                     key={project._id}
                     className="truncate cursor-pointer"
-                    onClick={() => router.replace(`/project/${project._id}`)}
                   >
                     <TableCell>{capitalizeWords(project.name)}</TableCell>
                     <TableCell>

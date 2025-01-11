@@ -2,7 +2,6 @@
 
 import CircularLoader from "@/Components/Common/CircularLoader";
 import { DateRangePicker } from "@/Components/Common/DateRangePicker";
-import Loader from "@/Components/Common/Loader";
 import {
   Select,
   SelectContent,
@@ -121,10 +120,6 @@ const Page = () => {
     };
   }, [hasNextPage, isFetchingNextPage, isDailyReportLoading]);
 
-  if (isDailyReportLoading && currentPage === 1) {
-    return <Loader />;
-  }
-
   return (
     <div className="w-full">
       <HeaderCard title="Reports" subTitle="Review users daily reports" />
@@ -166,8 +161,8 @@ const Page = () => {
         </div>
       </div>
 
-      {isDailyReportLoading ? (
-        <div className="flex items-center justify-center w-full">
+      {isDailyReportLoading && currentPage === 1 ? (
+        <div className="flex items-center justify-center w-full mt-10">
           <CircularLoader />
         </div>
       ) : dailyReports && dailyReports.length > 0 ? (

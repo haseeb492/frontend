@@ -7,10 +7,10 @@ import axiosInstance from "@/AxiosInterceptor";
 import Button from "../Common/Button";
 import { Form, FormControl, FormField, FormItem } from "../Common/Form";
 import InputField from "../Common/InputField";
-import Loader from "../Common/Loader";
 import { Modal } from "../Common/Modal";
 import { toast } from "../Common/Toast/use-toast";
 import PasswordInputField from "../Common/PasswordInputField";
+import CircularLoader from "../Common/CircularLoader";
 type ForgetPasswordProps = {
   isForgetPassword: boolean;
   setIsForgetPassword: (open: boolean) => void;
@@ -114,7 +114,11 @@ const ForgetPassword = ({
           onOpenChange={closeModals}
           className="bg-gray-300"
         >
-          {sendEmailMutation.isPending && <Loader />}
+          {sendEmailMutation.isPending && (
+            <div className="flex items-center justify-center mt-10">
+              <CircularLoader />
+            </div>
+          )}
           <Form {...emailForm}>
             <form
               onSubmit={emailForm.handleSubmit(handleSendEmail)}
@@ -153,7 +157,11 @@ const ForgetPassword = ({
           onOpenChange={closeModals}
           className="bg-gray-300"
         >
-          {resetPasswordMutation.isPending && <Loader />}
+          {resetPasswordMutation.isPending && (
+            <div className="flex items-center justify-center mt-10">
+              <CircularLoader />
+            </div>
+          )}
           <Form {...otpPasswordForm}>
             <form
               onSubmit={otpPasswordForm.handleSubmit(handleResetPassword)}

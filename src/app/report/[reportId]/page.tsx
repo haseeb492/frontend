@@ -3,7 +3,7 @@
 import axiosInstance from "@/AxiosInterceptor";
 import AvailableProductiveHours from "@/Components/AvailableProductiveHours";
 import Button from "@/Components/Common/Button";
-import Loader from "@/Components/Common/Loader";
+import CircularLoader from "@/Components/Common/CircularLoader";
 import { Modal } from "@/Components/Common/Modal";
 import { ShadcnButton } from "@/Components/Common/ShadcnButton";
 import { toast } from "@/Components/Common/Toast/use-toast";
@@ -99,11 +99,14 @@ const Page = ({ params }: { params: { reportId: string } }) => {
 
   return (
     <div className="w-full">
+      <HeaderCard title="Report" subTitle="Preview or edit your report" />
+
       {isLoading || isProductiveDurationLoading ? (
-        <Loader />
+        <div className="flex justify-center items-center mt-10">
+          <CircularLoader />
+        </div>
       ) : (
         <>
-          <HeaderCard title="Report" subTitle="Preview or edit your report" />
           {isModalOpen && !selectedTask && (
             <Modal
               title={`Add task`}

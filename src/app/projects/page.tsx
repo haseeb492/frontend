@@ -6,7 +6,6 @@ import { ACCESS_CONTROL } from "@/constants/accessControlConfig";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import useGetProjects from "@/hooks/use-get-projects";
-import Loader from "@/Components/Common/Loader";
 import {
   Table,
   TableBody,
@@ -24,14 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/Components/Common/SelectionField";
-import {
-  CheckCircle,
-  Circle,
-  Hourglass,
-  StopCircle,
-  XCircle,
-} from "lucide-react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "@/AxiosInterceptor";
 import { toast } from "@/Components/Common/Toast/use-toast";
 import { ApiError } from "@/lib/types";
@@ -41,36 +33,55 @@ import HeaderCard from "@/Components/HeaderCard";
 import { Tabs, TabsList, TabsTrigger } from "@/Components/Common/Tabs";
 import InternalProjectsList from "@/Components/InternalProjectsList";
 import { SET_MODAL } from "@/redux/slices/modalSlice";
+import { Icon } from "@iconify/react";
+import CircularLoader from "@/Components/Common/CircularLoader";
 
 const statuses = [
   {
     value: "in_progress",
     label: "In Progress",
-    icon: <Hourglass className="w-4 h-4 text-blue-500 mr-2" />,
+    icon: (
+      <Icon icon="mdi:progress-clock" className="w-4 h-4 text-blue-500 mr-2" />
+    ),
     color: "text-blue-500",
   },
   {
     value: "requirement_gathering",
     label: "Requirement Gathering",
-    icon: <Circle className="w-4 h-4 text-yellow-500 mr-2" />,
+    icon: (
+      <Icon
+        icon="mdi:clipboard-text-outline"
+        className="w-4 h-4 text-yellow-500 mr-2"
+      />
+    ),
     color: "text-yellow-500",
   },
   {
     value: "completed",
     label: "Completed",
-    icon: <CheckCircle className="w-4 h-4 text-green-500 mr-2" />,
+    icon: (
+      <Icon
+        icon="mdi:check-circle-outline"
+        className="w-4 h-4 text-green-500 mr-2"
+      />
+    ),
     color: "text-green-500",
   },
   {
     value: "canceled",
     label: "Canceled",
-    icon: <XCircle className="w-4 h-4 text-red-500 mr-2" />,
+    icon: <Icon icon="mdi:cancel" className="w-4 h-4 text-red-500 mr-2" />,
     color: "text-red-500",
   },
   {
     value: "on_hold",
     label: "On Hold",
-    icon: <StopCircle className="w-4 h-4 text-purple-500 mr-2" />,
+    icon: (
+      <Icon
+        icon="mdi:pause-circle-outline"
+        className="w-4 h-4 text-purple-500 mr-2"
+      />
+    ),
     color: "text-purple-500",
   },
 ];
@@ -89,6 +100,7 @@ const tableColumns = [
 ];
 
 const Page = () => {
+  const queryClient = useQueryClient();
   const [status, setStatus] = useState<string>("all");
   const [projectList, setProjectList] = useState<ProjectProps[]>([]);
   const [selectedTab, setSelectedTab] = useState<string>("external");
@@ -120,6 +132,7 @@ const Page = () => {
       );
     },
     onSuccess: (res) => {
+      queryClient.invalidateQueries({ queryKey: ["getProjects"] });
       toast({
         title: res?.data?.message,
       });
@@ -196,7 +209,9 @@ const Page = () => {
           </div>
 
           {isLoading ? (
-            <Loader />
+            <div className="flex items-center justify-center mt-10">
+              <CircularLoader size={40} />
+            </div>
           ) : (
             <div className="overflow-x-auto mt-lg">
               <Table className="min-w-full">
@@ -212,12 +227,30 @@ const Page = () => {
                     projectList.map((project: ProjectProps, index: number) => (
                       <TableRow
                         key={project._id}
-                        className="truncate cursor-pointer"
-                        onClick={() =>
-                          router.replace(`/project/${project._id}`)
-                        }
+                        className="truncate cursor-pointer group relative"
+                        onClick={() => {
+                          if (!isManager) {
+                            router.push(`/project/${project._id}`);
+                          }
+                        }}
                       >
-                        <TableCell>{capitalizeWords(project.name)}</TableCell>
+                        <TableCell className="flex items-center gap-2">
+                          <span>{capitalizeWords(project.name)}</span>
+                          <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Icon
+                              icon="mdi:chart-box-outline"
+                              className="text-blue-500 cursor-pointer"
+                              width="20"
+                              height="20"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                router.push(
+                                  `/analytics/project/${project._id}`
+                                );
+                              }}
+                            />
+                          </div>
+                        </TableCell>
                         <TableCell>
                           {new Date(project.startDate).toLocaleDateString(
                             "en-US",

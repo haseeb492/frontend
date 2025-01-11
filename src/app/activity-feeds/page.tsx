@@ -213,7 +213,7 @@ const Page = () => {
       </div>
       {isActivityLogsLoading && currentPage === 1 ? (
         <div className="flex items-center justify-center mt-20">
-          <CircularLoader size={50} />
+          <CircularLoader size={40} />
         </div>
       ) : (
         <div className="flex flex-col gap-x-3">

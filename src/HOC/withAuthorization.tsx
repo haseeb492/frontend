@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { checkAccess } from "@/lib/utils";
-import Loader from "@/Components/Common/Loader";
 import { LOGIN_ROUTE } from "@/constants/environment";
 
 const withAuthorization = (
@@ -41,14 +40,6 @@ const withAuthorization = (
         }
       }
     }, [user, resource, type, router, isUserLoaded]);
-
-    // if (!isUserLoaded) {
-    //   return <Loader />;
-    // }
-
-    // if (isAuthorized === null && user && user._id) {
-    //   return <Loader />;
-    // }
 
     return isAuthorized ? <WrappedComponent {...props} /> : null;
   };

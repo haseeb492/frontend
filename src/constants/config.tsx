@@ -87,4 +87,5 @@ export const PROTECTED_ROUTES = [
   "/report",
   "/daily-reports",
   "/public-holidays",
+  "/analytics",
 ];

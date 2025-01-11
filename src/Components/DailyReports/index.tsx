@@ -107,7 +107,7 @@ const DailyReports = () => {
       </div>
       <div className="w-full">
         {isDailyReportLoading ? (
-          <div className="flex items-center justify-center w-full">
+          <div className="flex items-center justify-center w-full mt-10 ">
             <CircularLoader />
           </div>
         ) : dailyReports && dailyReports.length > 0 ? (

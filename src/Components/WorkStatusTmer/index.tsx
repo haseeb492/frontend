@@ -40,7 +40,7 @@ const WorkStatusTimer: React.FC<WorkStatusTimerProps> = ({
     };
   }, [status, isBreak]);
 
-  return <span className="">{formatDuration(timeInMinutes)}</span>;
+  return <span>{formatDuration(timeInMinutes)}</span>;
 };
 
 export default WorkStatusTimer;
