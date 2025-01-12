@@ -10,6 +10,7 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      
       colors: {
         transparent: "transparent",
         primary: "#175CFF",
