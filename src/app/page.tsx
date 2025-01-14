@@ -179,7 +179,9 @@ export default function Home() {
         </div>
       ) : (
         <>
-          {professionalInfo?.professionalInfo.jobType === "remote" && (
+          {["hybrid", "remote"].includes(
+            professionalInfo?.professionalInfo?.jobType
+          ) && (
             <div className="flex justify-center items-center my-4 w-full">
               <Button
                 title={
@@ -279,10 +281,9 @@ export default function Home() {
               <h2 className="text-2xl text-primary">Facts</h2>
               <div className="">
                 <DateRangePicker
-                  title=""
                   className="min-w-60"
-                  startDate={dateRange[0] || undefined}
-                  endDate={dateRange[1] || undefined}
+                  startDate={dateRange[0] || null}
+                  endDate={dateRange[1] || null}
                   setDateRange={handleDateRangeChange}
                   placeholder="Last month"
                 />

@@ -42,7 +42,7 @@ const Page = ({ params }: { params: { projectId: string } }) => {
   };
 
   return (
-    <div className="">
+    <>
       <HeaderCard
         title="Project Analytics"
         subTitle="Visualize project analytics"
@@ -85,7 +85,7 @@ const Page = ({ params }: { params: { projectId: string } }) => {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

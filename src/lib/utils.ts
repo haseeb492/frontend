@@ -174,6 +174,16 @@ return count
   
 }
 
+export function parseDate(
+  value: Date | string | number | null | undefined
+): Date | null {
+  if (!value) return null;
+  if (value instanceof Date) return value;
+
+  const parsed = new Date(value);
+  return isNaN(parsed.getTime()) ? null : parsed;
+}
+
 export const checkAccess = (
   user: UserState,
   resource: string,

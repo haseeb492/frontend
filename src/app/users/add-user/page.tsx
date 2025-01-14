@@ -30,10 +30,24 @@ import withAuthorization from "@/HOC/withAuthorization";
 import { userSchema } from "@/lib/schemas";
 import { ApiError } from "@/lib/types";
 import HeaderCard from "@/Components/HeaderCard";
+import { DatePickerField } from "@/Components/Common/DatePicker";
+import { formatDate } from "@/lib/utils";
 
 interface RequestBodyType {
   name: string;
   email: string;
+  personalEmail: string;
+  mobileNumber: string;
+  secondaryMobileNumber: string;
+  dateOfBirth: string;
+  CNICNumber: string;
+  city: string;
+  permanentAddress: string;
+  currentAddress: string;
+  slackId: string;
+  gender: string;
+  bloodGroup: string;
+  officialBankAccountNumber: string;
   status: string;
   jobType: string;
   officeStartTime: string;
@@ -52,6 +66,18 @@ const Page = () => {
     defaultValues: {
       name: "",
       email: "",
+      personalEmail: "",
+      mobileNumber: "",
+      secondaryMobileNumber: "",
+      CNICNumber: "",
+      officialBankAccountNumber: "",
+      city: "",
+      permanentAddress: "",
+      currentAddress: "",
+      slackId: "",
+      bloodGroup: "",
+      gender: "",
+      dateOfBirth: null,
       status: "active",
       role: { id: "", name: "" },
       designationId: "",
@@ -109,6 +135,18 @@ const Page = () => {
       roleId: values.role.id,
       designationId: values.designationId,
       managerId: values.managerId,
+      personalEmail: values.personalEmail,
+      mobileNumber: values.mobileNumber,
+      secondaryMobileNumber: values.secondaryMobileNumber,
+      city: values.city,
+      currentAddress: values.currentAddress,
+      CNICNumber: values.CNICNumber,
+      permanentAddress: values.permanentAddress,
+      dateOfBirth: formatDate(values.dateOfBirth),
+      gender: values.gender,
+      slackId: values.slackId,
+      bloodGroup: values.bloodGroup,
+      officialBankAccountNumber: values.officialBankAccountNumber,
     };
     mutation.mutate(formattedValues);
   };
@@ -139,6 +177,24 @@ const Page = () => {
             )}
           />
           <FormField
+            name="personalEmail"
+            control={userForm.control}
+            render={({ field }) => (
+              <FormItem className="flex justify-center items-center">
+                <FormControl className="grow">
+                  <InputField
+                    value={field.value}
+                    onChange={field.onChange}
+                    errorMessage={
+                      userForm.formState.errors.personalEmail?.message
+                    }
+                    label="Personal Email:"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
             name="email"
             control={userForm.control}
             render={({ field }) => (
@@ -149,6 +205,235 @@ const Page = () => {
                     onChange={field.onChange}
                     errorMessage={userForm.formState.errors.email?.message}
                     label="Email Address:"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            name="CNICNumber"
+            control={userForm.control}
+            render={({ field }) => (
+              <FormItem className="flex justify-center items-center">
+                <FormControl className="grow">
+                  <InputField
+                    value={field.value}
+                    onChange={field.onChange}
+                    errorMessage={userForm.formState.errors.CNICNumber?.message}
+                    label="CNIC Number:"
+                    maxLength={13}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            name="dateOfBirth"
+            control={userForm.control}
+            render={({ field }) => (
+              <FormItem className="flex justify-center items-center">
+                <FormControl className="grow">
+                  <DatePickerField
+                    label="Date of Birth"
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="Select a date"
+                    errorMessage={
+                      userForm.formState.errors.dateOfBirth?.message
+                    }
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            name="gender"
+            control={userForm.control}
+            render={({ field }) => (
+              <FormItem className="flex justify-center items-center">
+                <FormControl className="grow">
+                  <Select
+                    defaultValue={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <SelectTrigger
+                      label="Gender:"
+                      errorMessage={userForm.formState.errors.gender?.message}
+                    >
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="male">Male</SelectItem>
+                      <SelectItem value="female">Female</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          {/* dropdown */}
+          <FormField
+            name="bloodGroup"
+            control={userForm.control}
+            render={({ field }) => (
+              <FormItem className="flex justify-center items-center">
+                <FormControl className="grow">
+                  <Select
+                    defaultValue={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <SelectTrigger
+                      label="Blood Group:"
+                      errorMessage={
+                        userForm.formState.errors.bloodGroup?.message
+                      }
+                    >
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="AB+">AB+</SelectItem>
+                      <SelectItem value="AB-">AB-</SelectItem>
+                      <SelectItem value="A+">A+</SelectItem>
+                      <SelectItem value="A-">A-</SelectItem>
+                      <SelectItem value="B+">B+</SelectItem>
+                      <SelectItem value="B-">B-</SelectItem>
+                      <SelectItem value="O+">O+</SelectItem>
+                      <SelectItem value="O-">O-</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          {/* phone no */}
+          <FormField
+            name="mobileNumber"
+            control={userForm.control}
+            render={({ field }) => (
+              <FormItem className="flex justify-center items-center">
+                <FormControl className="grow">
+                  <InputField
+                    value={field.value}
+                    onChange={field.onChange}
+                    errorMessage={
+                      userForm.formState.errors.mobileNumber?.message
+                    }
+                    label="Mobile Number:"
+                    maxLength={10}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          {/*  phone no */}
+          <FormField
+            name="secondaryMobileNumber"
+            control={userForm.control}
+            render={({ field }) => (
+              <FormItem className="flex justify-center items-center">
+                <FormControl className="grow">
+                  <InputField
+                    value={field.value}
+                    onChange={field.onChange}
+                    errorMessage={
+                      userForm.formState.errors.secondaryMobileNumber?.message
+                    }
+                    label="Secondary Mobile Number:"
+                    maxLength={10}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            name="officialBankAccountNumber"
+            control={userForm.control}
+            render={({ field }) => (
+              <FormItem className="flex justify-center items-center">
+                <FormControl className="grow">
+                  <InputField
+                    value={field.value}
+                    onChange={field.onChange}
+                    errorMessage={
+                      userForm.formState.errors.officialBankAccountNumber
+                        ?.message
+                    }
+                    label="Official Bank Account No:"
+                    maxLength={16}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          {/* city */}
+          <FormField
+            name="city"
+            control={userForm.control}
+            render={({ field }) => (
+              <FormItem className="flex justify-center items-center">
+                <FormControl className="grow">
+                  <InputField
+                    value={field.value}
+                    onChange={field.onChange}
+                    errorMessage={userForm.formState.errors.city?.message}
+                    label="City:"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          {/* address */}
+          <FormField
+            name="permanentAddress"
+            control={userForm.control}
+            render={({ field }) => (
+              <FormItem className="flex justify-center items-center">
+                <FormControl className="grow">
+                  <InputField
+                    value={field.value}
+                    onChange={field.onChange}
+                    errorMessage={
+                      userForm.formState.errors.permanentAddress?.message
+                    }
+                    label="Permanent Address:"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          {/* address */}
+          <FormField
+            name="currentAddress"
+            control={userForm.control}
+            render={({ field }) => (
+              <FormItem className="flex justify-center items-center">
+                <FormControl className="grow">
+                  <InputField
+                    value={field.value}
+                    onChange={field.onChange}
+                    errorMessage={
+                      userForm.formState.errors.currentAddress?.message
+                    }
+                    label="Current Address:"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          {/* slack id */}
+          <FormField
+            name="slackId"
+            control={userForm.control}
+            render={({ field }) => (
+              <FormItem className="flex justify-center items-center">
+                <FormControl className="grow">
+                  <InputField
+                    value={field.value}
+                    onChange={field.onChange}
+                    errorMessage={userForm.formState.errors.slackId?.message}
+                    label="Slack Id:"
                   />
                 </FormControl>
               </FormItem>
@@ -288,6 +573,7 @@ const Page = () => {
                     <SelectContent>
                       <SelectItem value="onsite">On site</SelectItem>
                       <SelectItem value="remote">Remote</SelectItem>
+                      <SelectItem value="hybrid">Hybrid</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormControl>
@@ -321,7 +607,8 @@ const Page = () => {
                 <FormControl className="grow">
                   <InputField
                     value={field.value}
-                    onChange={field.onChange}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    type="number"
                     maxLength={2}
                     errorMessage={
                       userForm.formState.errors.officeHours?.message
@@ -340,7 +627,8 @@ const Page = () => {
                 <FormControl className="grow">
                   <InputField
                     value={field.value}
-                    onChange={field.onChange}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    type="number"
                     maxLength={2}
                     errorMessage={
                       userForm.formState.errors.workingHours?.message

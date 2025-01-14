@@ -23,7 +23,7 @@ import Cookies from "js-cookie";
 import PasswordInputField from "@/Components/Common/PasswordInputField";
 
 const loginSchema = z.object({
-  email: z.string().min(1, "Enter email").email("Incorrect email address"),
+  email: z.string().min(1, "Enter email or username"),
   password: z
     .string()
     .min(1, "Enter password")
@@ -110,7 +110,7 @@ const Page = () => {
                         value={field.value}
                         onChange={field.onChange}
                         errorMessage={loginForm.formState.errors.email?.message}
-                        label="Email Address:"
+                        label="Username or Email:"
                       />
                     </FormControl>
                   </FormItem>

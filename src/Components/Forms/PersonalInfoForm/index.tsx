@@ -65,7 +65,7 @@ const PersonalInfoForm = ({
   isLoggedInUser,
   userId,
 }: PersonalInfoFormProps) => {
-  const user: UserState = useSelector((state: RootState) => state.user);
+  const user = useSelector((state: RootState) => state.user);
   const { personalInfo } = useGetPersonalInfo(userId, isLoggedInUser);
 
   const canUpdatePersonalInfo = checkAccess(

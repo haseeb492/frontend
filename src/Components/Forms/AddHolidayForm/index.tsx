@@ -70,7 +70,7 @@ const AddHolidayForm = () => {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col gap-2 justify-center mb-10"
+          className="flex flex-col gap-4 justify-center my-10"
         >
           <FormField
             name="title"

@@ -202,10 +202,9 @@ const Page = () => {
           )}
 
           <DateRangePicker
-            title=""
             className="min-w-60"
-            startDate={dateRange[0] || undefined}
-            endDate={dateRange[1] || undefined}
+            startDate={dateRange[0] || null}
+            endDate={dateRange[1] || null}
             setDateRange={handleDateRangeChange}
             placeholder="Last month"
           />

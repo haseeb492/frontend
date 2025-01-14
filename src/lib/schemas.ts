@@ -167,6 +167,36 @@ export const personalInfoSchema = z.object({
   .object({
     name: z.string().min(1, "Enter name"),
     email: z.string().min(1, "Enter email").email("Incorrect email address"),
+    personalEmail : z.string().min(1, "Enter personal email").email("Incorrect email address"),
+    CNICNumber: z
+    .string()
+    .min(1, "Please enter CNIC number")
+    .refine((val) => !val || /^\d{13}$/.test(val), {
+      message: "CNIC must be a 13-digit number",
+    }),    
+    dateOfBirth: z
+    .preprocess((arg) => (typeof arg === 'string' ? new Date(arg) : arg), z.date().nullable()), 
+    gender: z.string().min(1, "Please select gender"),
+    bloodGroup: z.string().min(1, "Please select bloodgroup"),
+    mobileNumber: z.string().min(1, "Please enter phone number").refine((val) => !val || /^\d{10}$/.test(val), {
+      message: "Mobile number must be a 10-digit number",
+    }),
+    secondaryMobileNumber: z
+      .string()
+      .min(1, "Please enter secondary mobile number")
+      .refine((val) => !val || /^\d{10}$/.test(val), {
+        message: "Secondary mobile number must be a 10-digit number",
+      }),
+      officialBankAccountNumber: z
+      .string()
+      .min(1, "Please enter bank account number")
+      .refine((val) => !val || /^\d{16}$/.test(val), {
+        message: "Bank account number must be a 16-digit number",
+      }),
+    city: z.string().min(1, "Please enter city"),
+    permanentAddress: z.string().min(1, "Please enter permanent address"),
+    currentAddress: z.string().min(1, "Please enter current address"),
+    slackId: z.string().min(1, "Please enter slack id"),
     status: z.string().min(1, "Enter status"),
     role: z.object({
       id: z.string().min(1, "Select a role"),
