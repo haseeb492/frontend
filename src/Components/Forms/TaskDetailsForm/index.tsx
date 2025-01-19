@@ -3,6 +3,7 @@
 import axiosInstance from "@/AxiosInterceptor";
 import Button from "@/Components/Common/Button";
 import CircularLoader from "@/Components/Common/CircularLoader";
+import { Editor } from "@/Components/Common/Editor";
 import {
   Form,
   FormControl,
@@ -10,6 +11,7 @@ import {
   FormItem,
 } from "@/Components/Common/Form";
 import InputField from "@/Components/Common/InputField";
+import { Preview } from "@/Components/Common/Preview";
 import {
   Select,
   SelectContent,
@@ -34,16 +36,17 @@ import { z } from "zod";
 
 interface TaskDetailsFormProps {
   taskId: string;
-  title: string;
   description: string;
   time: string;
-  projectId: string;
+  project: {
+    _id: string;
+    name: string;
+  };
   isLoggedIn?: boolean;
   onUpdateSuccess?: () => void;
 }
 
 interface RequestBodyType {
-  title: string;
   description: string;
   projectId: string;
   time: number;
@@ -51,10 +54,9 @@ interface RequestBodyType {
 
 const TaskDetailsForm = ({
   taskId,
-  title,
   description,
   time,
-  projectId,
+  project,
   isLoggedIn = true,
   onUpdateSuccess,
 }: TaskDetailsFormProps) => {
@@ -64,7 +66,7 @@ const TaskDetailsForm = ({
 
   const isManager = userRole === "MANAGER";
   const isEngineer = userRole === "ENGINEER";
-  const isIdleTask = title === "Idle Time";
+  const isIdleTask = project.name === "IP-ZT Idle Time";
   const { hours, minutes } = getHoursAndMinutes(Number(time));
 
   const { projectsByresource, isLoading: isEngineerProjectsLoading } =
@@ -97,9 +99,8 @@ const TaskDetailsForm = ({
     resolver: zodResolver(taskFormSchema),
     mode: "onBlur",
     defaultValues: {
-      title: title,
       description: description,
-      projectId: projectId,
+      projectId: project._id,
       hours: hours.toString(),
       minutes: minutes.toString(),
     },
@@ -141,9 +142,6 @@ const TaskDetailsForm = ({
 
     const formattedPayload: Partial<RequestBodyType> = {};
 
-    if (dirtyFields.title) {
-      formattedPayload.title = values.title;
-    }
     if (dirtyFields.description) {
       formattedPayload.description = values.description;
     }
@@ -165,6 +163,7 @@ const TaskDetailsForm = ({
       </div>
     );
   }
+
   return (
     <>
       <Form {...form}>
@@ -173,23 +172,6 @@ const TaskDetailsForm = ({
           className="flex items-center justify-center w-full mb-5"
         >
           <div className="flex flex-col gap-2 w-full">
-            <FormField
-              name="title"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem className="flex justify-center items-center">
-                  <FormControl className="grow">
-                    <InputField
-                      disabled={!isLoggedIn || isIdleTask}
-                      value={field.value}
-                      onChange={field.onChange}
-                      errorMessage={form.formState.errors.title?.message}
-                      label="Title:"
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
             <FormField
               name="description"
               control={form.control}
@@ -202,40 +184,11 @@ const TaskDetailsForm = ({
                     Description:
                   </label>
                   <FormControl className="grow">
-                    <>
-                      <textarea
-                        disabled={!isLoggedIn || isIdleTask}
-                        id="description"
-                        ref={(textarea) => {
-                          if (textarea) {
-                            textarea.style.height = "auto";
-                            textarea.style.height = `${textarea.scrollHeight}px`;
-                          }
-                        }}
-                        value={field.value}
-                        onChange={(e) => {
-                          field.onChange(e);
-                          const target = e.target as HTMLTextAreaElement;
-                          target.style.height = "auto";
-                          target.style.height = `${target.scrollHeight}px`;
-                        }}
-                        rows={1}
-                        placeholder="Enter task description"
-                        className={`autofill:input-autofill  disabled:cursor-not-allowed overflow-hidden text-black disabled:bg-gray-200
-                        disabled:focus-visible:border-gray-300 disabled:hover:border-gray-300
-                        border px-sm py-sm border-gray-300 hover:border-primary
-                        focus-visible:border-primary focus-visible:outline-none focus:border-2
-                        text-sm rounded-3xs w-full resize-none ${
-                          form.formState.errors.description &&
-                          "border-red-500 focus-visible:border-red-500"
-                        }`}
-                      />
-                      {form.formState.errors.description && (
-                        <p className="text-md text-red-500 mt-xs">
-                          {form.formState.errors.description.message}
-                        </p>
-                      )}
-                    </>
+                    {isLoggedIn && !isIdleTask ? (
+                      <Editor value={field.value} onChange={field.onChange} />
+                    ) : (
+                      <Preview value={field.value} />
+                    )}
                   </FormControl>
                 </FormItem>
               )}
@@ -281,6 +234,7 @@ const TaskDetailsForm = ({
                 )}
               />
             </div>
+
             <FormField
               name="projectId"
               control={form.control}
@@ -324,6 +278,8 @@ const TaskDetailsForm = ({
                 </FormItem>
               )}
             />
+
+            {/* -------------- Save Button -------------- */}
             <div className="flex w-full justify-end">
               {isLoggedIn && !isIdleTask && (
                 <Button

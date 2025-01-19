@@ -1,33 +1,31 @@
 "use client";
 
-import axiosInstance from "@/AxiosInterceptor";
 import AvailableProductiveHours from "@/Components/AvailableProductiveHours";
-import Button from "@/Components/Common/Button";
 import CircularLoader from "@/Components/Common/CircularLoader";
+import { FixedLengthPreview } from "@/Components/Common/FixedHieghtPreview";
 import { Modal } from "@/Components/Common/Modal";
 import { ShadcnButton } from "@/Components/Common/ShadcnButton";
-import { toast } from "@/Components/Common/Toast/use-toast";
 import DailyQuote from "@/Components/DailyQuote";
 import AddTaskForm from "@/Components/Forms/AddTaskForm";
 import TaskDetailsForm from "@/Components/Forms/TaskDetailsForm";
 import HeaderCard from "@/Components/HeaderCard";
 import useGetAvailableProductiveDuration from "@/hooks/use-get-available-productive-duration";
 import useGetDailyReport from "@/hooks/use-get-daily-report";
-import { ApiError } from "@/lib/types";
 import { formatDuration } from "@/lib/utils";
 import { SET_MODAL } from "@/redux/slices/modalSlice";
 import { RootState } from "@/redux/store";
-import { useMutation } from "@tanstack/react-query";
 import { PlusIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 interface TaskDetailsFormProps {
   taskId: string;
-  title: string;
   description: string;
   time: string;
-  projectId: string;
+  project: {
+    _id: string;
+    name: string;
+  };
 }
 
 const Page = ({ params }: { params: { reportId: string } }) => {
@@ -53,25 +51,6 @@ const Page = ({ params }: { params: { reportId: string } }) => {
       user?._id ? true : false
     );
 
-  const submitReportMutation = useMutation({
-    mutationFn: (reportId: string) => {
-      return axiosInstance.patch(
-        `/daily-report/submit-daily-report?reportId=${reportId}`
-      );
-    },
-    onSuccess: (res) => {
-      toast({
-        title: res?.data?.message,
-      });
-    },
-    onError: (error: ApiError) => {
-      toast({
-        title: error?.response?.data?.error || "Something went wrong",
-        variant: "destructive",
-      });
-    },
-  });
-
   useEffect(() => {
     if (user?._id && dailyReport?.report) {
       if (dailyReport?.report?.user === user?._id) {
@@ -91,10 +70,6 @@ const Page = ({ params }: { params: { reportId: string } }) => {
 
   const handleTaskUpdateSuccess = () => {
     closeTaskModal();
-  };
-
-  const handleReportSubmit = () => {
-    submitReportMutation.mutate(dailyReport?.report?._id);
   };
 
   return (
@@ -120,7 +95,7 @@ const Page = ({ params }: { params: { reportId: string } }) => {
 
           {selectedTask && isModalOpen && (
             <Modal
-              title={`Task Details: ${selectedTask.title}`}
+              title={`Task Details`}
               open={!!selectedTask && isModalOpen}
               onOpenChange={closeTaskModal}
               className="bg-white min-w-[600px]"
@@ -170,31 +145,26 @@ const Page = ({ params }: { params: { reportId: string } }) => {
                     dailyReport.tasks.map((task: any) => (
                       <div
                         key={task._id}
-                        className="
-                        flex justify-center p-4 items-center 
-                        w-auto h-auto min-h-20 min-w-40
-                        border border-gray-300 
-                        shadow-md shadow-gray-400 
-                        rounded-md 
-                        cursor-pointer
-                      "
+                        className="flex flex-col justify-start p-4 items-start 
+                          w-auto h-40 min-w-40 border border-gray-300 
+                          shadow-md shadow-gray-400 rounded-sm cursor-pointer"
                         onClick={() => {
                           setSelectedTask({
                             taskId: task._id,
-                            title: task.title,
                             description: task.description,
                             time: task.time.toString(),
-                            projectId: task.project,
+                            project: task.project,
                           });
                           dispatch(SET_MODAL(true));
                         }}
                       >
                         <span className="text-primary text-lg">
-                          {task.title}{" "}
+                          {task.project.name}{" "}
                           <span className="text-slate-600 text-lg">
                             - {formatDuration(task.time)}
                           </span>
                         </span>
+                        <FixedLengthPreview value={task.description} />
                       </div>
                     ))
                   ) : (
@@ -203,18 +173,6 @@ const Page = ({ params }: { params: { reportId: string } }) => {
                     </span>
                   )}
                 </div>
-              </div>
-
-              <div className="flex justify-end mt-4">
-                <Button
-                  title={
-                    submitReportMutation.isPending
-                      ? "Loading..."
-                      : "Submit Report"
-                  }
-                  disabled={submitReportMutation.isPending}
-                  onClick={handleReportSubmit}
-                />
               </div>
             </div>
 

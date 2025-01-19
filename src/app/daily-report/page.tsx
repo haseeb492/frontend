@@ -4,6 +4,7 @@ import axiosInstance from "@/AxiosInterceptor";
 import AvailableProductiveHours from "@/Components/AvailableProductiveHours";
 import Button from "@/Components/Common/Button";
 import CircularLoader from "@/Components/Common/CircularLoader";
+import { FixedLengthPreview } from "@/Components/Common/FixedHieghtPreview";
 import { Modal } from "@/Components/Common/Modal";
 import { ShadcnButton } from "@/Components/Common/ShadcnButton";
 import { toast } from "@/Components/Common/Toast/use-toast";
@@ -27,10 +28,12 @@ import { useDispatch, useSelector } from "react-redux";
 
 interface TaskDetailsFormProps {
   taskId: string;
-  title: string;
   description: string;
   time: string;
-  projectId: string;
+  project: {
+    _id: string;
+    name: string;
+  };
 }
 
 const Page = () => {
@@ -109,7 +112,7 @@ const Page = () => {
 
       {selectedTask && isModalOpen && (
         <Modal
-          title={`Task Details: ${selectedTask.title}`}
+          title={`Task Details`}
           open={!!selectedTask && isModalOpen}
           onOpenChange={closeTaskModal}
           className="bg-white min-w-[600px]"
@@ -170,31 +173,26 @@ const Page = () => {
                       dailyReport.tasks.map((task: any) => (
                         <div
                           key={task._id}
-                          className="
-                        flex justify-center p-4 items-center 
-                        w-auto h-auto min-h-20 min-w-40
-                        border border-gray-300 
-                        shadow-md shadow-gray-400 
-                        rounded-md 
-                        cursor-pointer
-                      "
+                          className="flex flex-col justify-start p-4 items-start 
+                          w-auto h-40 min-w-40 border border-gray-300 
+                          shadow-md shadow-gray-400 rounded-[5px] cursor-pointer"
                           onClick={() => {
                             setSelectedTask({
                               taskId: task._id,
-                              title: task.title,
                               description: task.description,
                               time: task.time.toString(),
-                              projectId: task.project,
+                              project: task.project,
                             });
                             dispatch(SET_MODAL(true));
                           }}
                         >
                           <span className="text-primary text-lg">
-                            {task.title}{" "}
+                            {task.project.name}{" "}
                             <span className="text-slate-600 text-lg">
                               - {formatDuration(task.time)}
                             </span>
                           </span>
+                          <FixedLengthPreview value={task.description} />
                         </div>
                       ))
                     ) : (

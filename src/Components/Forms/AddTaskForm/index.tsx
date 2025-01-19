@@ -3,6 +3,7 @@
 import axiosInstance from "@/AxiosInterceptor";
 import Button from "@/Components/Common/Button";
 import CircularLoader from "@/Components/Common/CircularLoader";
+import { Editor } from "@/Components/Common/Editor";
 import {
   Form,
   FormControl,
@@ -38,7 +39,6 @@ interface AddTaskFormProps {
 
 interface RequestBodyType {
   reportId: string;
-  title: string;
   description: string;
   projectId: string;
   time: number;
@@ -83,7 +83,6 @@ const AddTaskForm = ({ reportId }: AddTaskFormProps) => {
     resolver: zodResolver(taskFormSchema),
     mode: "onBlur",
     defaultValues: {
-      title: "",
       description: "",
       projectId: "",
       hours: "0",
@@ -122,7 +121,6 @@ const AddTaskForm = ({ reportId }: AddTaskFormProps) => {
   const onSubmit = (values: z.infer<typeof taskFormSchema>) => {
     const formattedPayload: RequestBodyType = {
       reportId: reportId,
-      title: values.title,
       description: values.description,
       projectId: values.projectId,
       time: Number(values.hours) * 60 + Number(values.minutes),
@@ -146,17 +144,40 @@ const AddTaskForm = ({ reportId }: AddTaskFormProps) => {
         >
           <div className="flex flex-col gap-2 w-full">
             <FormField
-              name="title"
+              name="projectId"
               control={form.control}
               render={({ field }) => (
                 <FormItem className="flex justify-center items-center">
-                  <FormControl className="grow">
-                    <InputField
-                      value={field.value}
-                      onChange={field.onChange}
-                      errorMessage={form.formState.errors.title?.message}
-                      label="Title:"
-                    />
+                  <FormControl className="grow ">
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger
+                        label="Project:"
+                        errorMessage={form.formState.errors.projectId?.message}
+                        className="text-black"
+                      >
+                        <SelectValue placeholder="Select a project" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {allProjects ? (
+                          allProjects.map(
+                            (project: { name: string; _id: string }) => {
+                              return (
+                                <SelectItem
+                                  key={project._id}
+                                  value={project._id}
+                                >
+                                  {project.name}
+                                </SelectItem>
+                              );
+                            }
+                          )
+                        ) : (
+                          <SelectItem value="-" aria-readonly>
+                            No projects found
+                          </SelectItem>
+                        )}
+                      </SelectContent>
+                    </Select>
                   </FormControl>
                 </FormItem>
               )}
@@ -173,33 +194,7 @@ const AddTaskForm = ({ reportId }: AddTaskFormProps) => {
                     Description:
                   </label>
                   <FormControl className="grow">
-                    <>
-                      <textarea
-                        id="description"
-                        value={field.value}
-                        onChange={(e) => {
-                          field.onChange(e);
-                          const target = e.target as HTMLTextAreaElement;
-                          target.style.height = "auto";
-                          target.style.height = `${target.scrollHeight}px`;
-                        }}
-                        rows={1}
-                        placeholder="Enter task description"
-                        className={`autofill:input-autofill overflow-hidden text-black disabled:bg-gray-200
-                      disabled:focus-visible:border-gray-300 disabled:hover:border-gray-300
-                      border px-sm py-sm border-gray-300 hover:border-primary
-                      focus-visible:border-primary focus-visible:outline-none focus:border-2
-                      text-sm rounded-3xs w-full resize-none ${
-                        form.formState.errors.description &&
-                        "border-red-500 focus-visible:border-red-500"
-                      }`}
-                      />
-                      {form.formState.errors.description && (
-                        <p className="text-md text-red-500 mt-xs">
-                          {form.formState.errors.description.message}
-                        </p>
-                      )}
-                    </>
+                    <Editor value={field.value} onChange={field.onChange} />
                   </FormControl>
                 </FormItem>
               )}
@@ -243,45 +238,6 @@ const AddTaskForm = ({ reportId }: AddTaskFormProps) => {
                 )}
               />
             </div>
-            <FormField
-              name="projectId"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem className="flex justify-center items-center">
-                  <FormControl className="grow ">
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger
-                        label="Project:"
-                        errorMessage={form.formState.errors.projectId?.message}
-                        className="text-black"
-                      >
-                        <SelectValue placeholder="Select a project" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {allProjects ? (
-                          allProjects.map(
-                            (project: { name: string; _id: string }) => {
-                              return (
-                                <SelectItem
-                                  key={project._id}
-                                  value={project._id}
-                                >
-                                  {project.name}
-                                </SelectItem>
-                              );
-                            }
-                          )
-                        ) : (
-                          <SelectItem value="-" aria-readonly>
-                            No projects found
-                          </SelectItem>
-                        )}
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                </FormItem>
-              )}
-            />
             <div className="flex w-full justify-end">
               <Button
                 title={mutation.isPending ? "Loading..." : "Save"}
