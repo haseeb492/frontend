@@ -61,7 +61,10 @@ export function DateRangePicker({
   }, [startDate, endDate]);
 
   function handleCalendarSelect(selected: DateRange | undefined) {
-    const newRange: [Date | null, Date | null] = [startDate, endDate];
+    const newRange: [Date | null, Date | null] = [
+      selected?.from || null,
+      selected?.to || null,
+    ];
     setRange(newRange);
     setDateRange(newRange);
   }
@@ -133,7 +136,7 @@ export function DateRangePicker({
             )}
           </ShadcnButton>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
+        <PopoverContent className="w-auto p-0 z-50" align="start">
           {/* The top filter dropdown */}
           <div className="p-3 border-b">
             <Select onValueChange={handleRangeFilter}>

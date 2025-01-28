@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isValidPhoneNumber } from "libphonenumber-js";
 
 export const personalInfoSchema = z.object({
     nameOnCNIC: z.string().optional(),
@@ -14,13 +15,13 @@ export const personalInfoSchema = z.object({
     .preprocess((arg) => (typeof arg === 'string' ? new Date(arg) : arg), z.date().nullable().optional()), 
     gender: z.string().optional(),
     bloodGroup: z.string().optional(),
-    mobileNumber: z.string().refine((val) => !val || /^\d{10}$/.test(val), {
-      message: "Mobile number must be a 10-digit number",
+    mobileNumber: z.string().refine((val) => isValidPhoneNumber(val), {
+      message: "Please enter a valid phone number with the country code.",
     }).optional(),
     secondaryMobileNumber: z
       .string()
-      .refine((val) => !val || /^\d{10}$/.test(val), {
-        message: "Secondary mobile number must be a 10-digit number",
+      .refine((val) => isValidPhoneNumber(val), {
+        message: "Please enter a valid phone number with the country code.",
       }).optional(),
     vehicleType: z.string().optional(),
     vehicleNumber: z.string().optional(),
@@ -40,8 +41,8 @@ export const personalInfoSchema = z.object({
     familyRelationship: z.string().optional(),
     familyContactNumber: z
       .string()
-      .refine((val) => !val || /^\d{10}$/.test(val), {
-        message: "Family contact number must be a 10-digit number",
+      .refine((val) => isValidPhoneNumber(val), {
+        message: "Please enter a valid phone number with the country code.",
       }).optional(),
     marriageDate: z    
     .preprocess((arg) => (typeof arg === 'string' ? new Date(arg) : arg), z.date().nullable().optional()), 
@@ -178,14 +179,14 @@ export const personalInfoSchema = z.object({
     .preprocess((arg) => (typeof arg === 'string' ? new Date(arg) : arg), z.date().nullable()), 
     gender: z.string().min(1, "Please select gender"),
     bloodGroup: z.string().min(1, "Please select bloodgroup"),
-    mobileNumber: z.string().min(1, "Please enter phone number").refine((val) => !val || /^\d{10}$/.test(val), {
-      message: "Mobile number must be a 10-digit number",
+    mobileNumber: z.string().min(1, "Please enter phone number").refine((val) => isValidPhoneNumber(val), {
+      message: "Please enter a valid phone number with the country code.",
     }),
     secondaryMobileNumber: z
       .string()
       .min(1, "Please enter secondary mobile number")
-      .refine((val) => !val || /^\d{10}$/.test(val), {
-        message: "Secondary mobile number must be a 10-digit number",
+      .refine((val) => isValidPhoneNumber(val), {
+        message: "Please enter a valid phone number with the country code.",
       }),
       officialBankAccountNumber: z
       .string()
@@ -210,6 +211,9 @@ export const personalInfoSchema = z.object({
     officeHours: z.number().min(1, "Enter office hours"),
     workingHours: z.number().min(1, "Enter working hours"),
     managerId: z.string(),
+    joiningDate : z
+    .preprocess((arg) => (typeof arg === 'string' ? new Date(arg) : arg), z.date().nullable()), 
+    employmentStatus : z.string().min(1, "Please select employement status"),
   })
   .superRefine((data, ctx) => {
     if (data.role.name === "ENGINEER" && !data.managerId) {
@@ -226,4 +230,42 @@ export const personalInfoSchema = z.object({
     projectId : z.string().min(1, "Project is required"),
     hours : z.string().default("0"),
     minutes : z.string().default("0"),
+  });
+
+  export const leaveRequest = z.object({
+    leaveType : z.string().min(1, "Please enter leave type"),
+    dateRange : z.array(z.date()).default([]),
+    reason : z.string().min(1, "Please provide reason")
+  });
+
+  export const wfhRequest = z.object({
+    dateRange : z.array(z.date()).default([]),
+    reason : z.string().min(1, "Please provide reason")
+  });
+
+  export const halfDayRequest = z.object({
+    halfDayType : z.string().min(1, "Please enter halfday type"),
+    date : z.date().nullable(),
+    reason : z.string().min(1, "Please provide reason")
+  });
+
+  export const updateLeaveRequestSchema = z.object({
+    leaveType : z.string().optional(),
+    dateRange : z.array(z.date()).default([]),
+    reason : z.string().optional()
+  })
+
+  export const updateWFHRequestSchema = z.object({
+    dateRange : z.array(z.date()).default([]),
+    reason : z.string().optional()
+  })
+
+  export const updateHalfDayRequestSchema = z.object({
+    halfDayType : z.string().optional(),
+    date : z.date().nullable(),
+    reason : z.string().optional()
+  });
+
+  export const rejectRequestSchema = z.object({
+    remarks : z.string().min(1, "Please provide remarks to reject request")
   })

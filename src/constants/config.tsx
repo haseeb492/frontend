@@ -42,10 +42,16 @@ export const SIDEBAR_ITEMS = [
     path: "/projects",
   },
   {
+    title: "My Requests",
+    icon: "mdi:invoice-text-edit",
+    name: "my-requests",
+    path: "/my-requests",
+  },
+  {
     title: "Requests",
     icon: "mdi:invoice-text-edit",
-    name: "reports",
-    path: "/reports",
+    name: "requests",
+    path: "/requests",
   },
   {
     title: "My Reports",
@@ -88,4 +94,6 @@ export const PROTECTED_ROUTES = [
   "/daily-reports",
   "/public-holidays",
   "/analytics",
+  "/my-requests",
+  "/requests",
 ];

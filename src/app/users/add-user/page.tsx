@@ -32,6 +32,8 @@ import { ApiError } from "@/lib/types";
 import HeaderCard from "@/Components/HeaderCard";
 import { DatePickerField } from "@/Components/Common/DatePicker";
 import { formatDate } from "@/lib/utils";
+import { PhoneNumberInput } from "@/Components/Common/PhoneNumberInput";
+import parsePhoneNumberFromString from "libphonenumber-js";
 
 interface RequestBodyType {
   name: string;
@@ -56,6 +58,8 @@ interface RequestBodyType {
   roleId: string;
   designationId: string;
   managerId: string;
+  joiningDate: string;
+  employmentStatus: string;
 }
 
 const Page = () => {
@@ -78,6 +82,7 @@ const Page = () => {
       bloodGroup: "",
       gender: "",
       dateOfBirth: null,
+      joiningDate: null,
       status: "active",
       role: { id: "", name: "" },
       designationId: "",
@@ -86,6 +91,7 @@ const Page = () => {
       officeHours: 9,
       workingHours: 8,
       managerId: "",
+      employmentStatus: "permanent",
     },
   });
   const { getAllRoles } = UseGetAllRoles();
@@ -122,6 +128,7 @@ const Page = () => {
       });
     },
   });
+  console.log(userForm.getValues());
 
   const onSubmit = (values: z.infer<typeof userSchema>) => {
     const formattedValues: RequestBodyType = {
@@ -147,6 +154,8 @@ const Page = () => {
       slackId: values.slackId,
       bloodGroup: values.bloodGroup,
       officialBankAccountNumber: values.officialBankAccountNumber,
+      joiningDate: formatDate(values.joiningDate),
+      employmentStatus: values.employmentStatus,
     };
     mutation.mutate(formattedValues);
   };
@@ -314,14 +323,13 @@ const Page = () => {
             render={({ field }) => (
               <FormItem className="flex justify-center items-center">
                 <FormControl className="grow">
-                  <InputField
+                  <PhoneNumberInput
                     value={field.value}
                     onChange={field.onChange}
+                    label="Mobile Number: "
                     errorMessage={
                       userForm.formState.errors.mobileNumber?.message
                     }
-                    label="Mobile Number:"
-                    maxLength={10}
                   />
                 </FormControl>
               </FormItem>
@@ -334,14 +342,13 @@ const Page = () => {
             render={({ field }) => (
               <FormItem className="flex justify-center items-center">
                 <FormControl className="grow">
-                  <InputField
+                  <PhoneNumberInput
                     value={field.value}
                     onChange={field.onChange}
+                    label="Secondary Mobile Number: "
                     errorMessage={
                       userForm.formState.errors.secondaryMobileNumber?.message
                     }
-                    label="Secondary Mobile Number:"
-                    maxLength={10}
                   />
                 </FormControl>
               </FormItem>
@@ -465,6 +472,36 @@ const Page = () => {
             )}
           />
           <FormField
+            name="employmentStatus"
+            control={userForm.control}
+            render={({ field }) => (
+              <FormItem className="flex justify-center items-center">
+                <FormControl className="grow">
+                  <Select
+                    defaultValue={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <SelectTrigger
+                      label="Employement Status:"
+                      errorMessage={
+                        userForm.formState.errors.employmentStatus?.message
+                      }
+                    >
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="permanent">Permanent</SelectItem>
+                      <SelectItem value="probation">Probation</SelectItem>
+                      <SelectItem value="notice period">
+                        Notice Period
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
             name="role"
             control={userForm.control}
             render={({ field }) => (
@@ -576,6 +613,25 @@ const Page = () => {
                       <SelectItem value="hybrid">Hybrid</SelectItem>
                     </SelectContent>
                   </Select>
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            name="joiningDate"
+            control={userForm.control}
+            render={({ field }) => (
+              <FormItem className="flex justify-center items-center">
+                <FormControl className="grow">
+                  <DatePickerField
+                    label="Joining Date:"
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="Select a date"
+                    errorMessage={
+                      userForm.formState.errors.joiningDate?.message
+                    }
+                  />
                 </FormControl>
               </FormItem>
             )}

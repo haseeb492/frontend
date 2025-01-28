@@ -173,6 +173,49 @@ const TaskDetailsForm = ({
         >
           <div className="flex flex-col gap-2 w-full">
             <FormField
+              name="projectId"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem className="flex justify-center items-center">
+                  <FormControl className="grow ">
+                    <Select
+                      disabled={!isLoggedIn || isIdleTask}
+                      value={field.value}
+                      onValueChange={field.onChange}
+                    >
+                      <SelectTrigger
+                        label="Project:"
+                        errorMessage={form.formState.errors.projectId?.message}
+                        className="text-black"
+                      >
+                        <SelectValue placeholder="Select a project" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {allProjects ? (
+                          allProjects.map(
+                            (project: { name: string; _id: string }) => {
+                              return (
+                                <SelectItem
+                                  key={project._id}
+                                  value={project._id}
+                                >
+                                  {project.name}
+                                </SelectItem>
+                              );
+                            }
+                          )
+                        ) : (
+                          <SelectItem value="-" aria-readonly>
+                            No projects found
+                          </SelectItem>
+                        )}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
               name="description"
               control={form.control}
               render={({ field }) => (
@@ -235,51 +278,6 @@ const TaskDetailsForm = ({
               />
             </div>
 
-            <FormField
-              name="projectId"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem className="flex justify-center items-center">
-                  <FormControl className="grow ">
-                    <Select
-                      disabled={!isLoggedIn || isIdleTask}
-                      value={field.value}
-                      onValueChange={field.onChange}
-                    >
-                      <SelectTrigger
-                        label="Project:"
-                        errorMessage={form.formState.errors.projectId?.message}
-                        className="text-black"
-                      >
-                        <SelectValue placeholder="Select a project" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {allProjects ? (
-                          allProjects.map(
-                            (project: { name: string; _id: string }) => {
-                              return (
-                                <SelectItem
-                                  key={project._id}
-                                  value={project._id}
-                                >
-                                  {project.name}
-                                </SelectItem>
-                              );
-                            }
-                          )
-                        ) : (
-                          <SelectItem value="-" aria-readonly>
-                            No projects found
-                          </SelectItem>
-                        )}
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
-            {/* -------------- Save Button -------------- */}
             <div className="flex w-full justify-end">
               {isLoggedIn && !isIdleTask && (
                 <Button

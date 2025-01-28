@@ -1,3 +1,5 @@
+import { spec } from "node:test/reporters";
+
 export type UserRole =
   | "ADMIN"
   | "EXECUTIVE"
@@ -72,3 +74,23 @@ export type UserDesignation =
       };
     };
   };
+
+  export interface RequestType {
+    _id: string;
+    type: string;
+    leaveType?: string;
+    halfDayType?: string;
+    startDate: Date;
+    endDate: Date;
+    status: string;
+    reason: string;
+    approvedBy?: {
+      name: string;
+      _id: string;
+    };
+    generatedBy?: {
+      name: string;
+      _id: string;
+    };
+    remarks?: string;
+  }

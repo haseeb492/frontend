@@ -103,6 +103,17 @@ export const ACCESS_CONTROL: AccessControlConfig = {
         MANAGER : "underManager",
         OPERATIONS : null,
       }
+    },
+    "/requests" : {
+      roles : ["EXECUTIVE", "MANAGER", "OPERATIONS", "HR"],
+      designations : ["CEO", "DIRECTOR", "SENIOR PM", "PM", "ASSOCIATE PM", "OP EXECUTIVE", "OP MANAGER", "HR ASSOCIATE MANAGER", "HR MANAGER", "HR EXECUTIVE", "RECRUITER"],
+      permissions : ["read:request"],
+      scope : {
+        EXECUTIVE : null,
+        MANAGER : null,
+        OPERATIONS : null,
+        HR : null
+      }
     }
   },
   components: {
@@ -163,7 +174,26 @@ export const ACCESS_CONTROL: AccessControlConfig = {
         EXECUTIVE : null,
         HR : null,
       }
-    }
+    },
+    ReadRequest : {
+      roles : ["EXECUTIVE", "HR"],
+      designations : ["CEO", "DIRECTOR", "HR EXECUTIVE", "HR ASSOCIATE MANAGER", "HR MANAGER", "RECRUITER"],
+      permissions : ["read:request"],
+      scope : {
+        EXECUTIVE : null,
+        HR : null,
+      }
+    },
+    ResolveRequest : {
+      roles : ["EXECUTIVE", "MANAGER", "OPERATIONS"],
+      designations : ["CEO", "DIRECTOR", "PM", "SENIOR PM", "ASSOCIATE PM", "OP EXECUTIVE", "OP MANAGER"],
+      permissions : ["update:request"],
+      scope : {
+        EXECUTIVE : null,
+        OPERATIONS : null,
+        MANAGER : null,
+      }
+    },
   },
 
 };

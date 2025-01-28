@@ -174,6 +174,53 @@ return count
   
 }
 
+export function formatDateRange(startDate: Date, endDate: Date): string {
+  const options: Intl.DateTimeFormatOptions = {
+    month: 'short', 
+    day: 'numeric', 
+    year: 'numeric', 
+  };
+
+
+  const formattedStartDate = startDate.toLocaleDateString('en-US', options);
+  const formattedEndDate = endDate.toLocaleDateString('en-US', options);
+
+  return `${formattedStartDate} to ${formattedEndDate}`;
+}
+
+export function formatString(input: string): string {
+  const stringWithSpaces = input.replace(/_/g, ' ');
+
+  const words = stringWithSpaces.split(' ');
+
+  const capitalizedWords = words.map(word => {
+    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+  });
+
+  return capitalizedWords.join(' ');
+}
+
+export const calculateDateDiff = (startDate : Date, endDate : Date) => {
+  if (!(startDate instanceof Date) || !(endDate instanceof Date)) {
+    throw new Error("Both startDate and endDate must be valid Date objects.");
+  }
+
+  let diffInDays = 0;
+  for (
+    let date = new Date(startDate);
+    date <= endDate;
+    date.setDate(date.getDate() + 1)
+  ) {
+    const dayOfWeek = date.getDay();
+    if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+      diffInDays++;
+    }
+  }
+
+  return diffInDays;
+};
+
+
 export function parseDate(
   value: Date | string | number | null | undefined
 ): Date | null {

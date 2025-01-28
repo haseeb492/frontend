@@ -1,7 +1,7 @@
 "use client";
 import { z } from "zod";
 
-import React, { useEffect } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { useForm, useWatch } from "react-hook-form";
@@ -24,11 +24,12 @@ import {
 import { DatePickerField } from "@/Components/Common/DatePicker";
 import { personalInfoSchema } from "@/lib/schemas";
 import { checkAccess, formatDate } from "@/lib/utils";
-import { ApiError, UserState } from "@/lib/types";
+import { ApiError } from "@/lib/types";
 import useGetPersonalInfo from "@/hooks/use-get-personal-info";
 import { useMutation } from "@tanstack/react-query";
 import axiosInstance from "@/AxiosInterceptor";
 import { toast } from "@/Components/Common/Toast/use-toast";
+import PhoneNumberInput from "@/Components/Common/PhoneNumberInput";
 
 interface RequestBodyType {
   personalInfo: {
@@ -354,13 +355,11 @@ const PersonalInfoForm = ({
             render={({ field }) => (
               <FormItem className="flex justify-center items-center">
                 <FormControl className="grow">
-                  <InputField
+                  <PhoneNumberInput
                     value={field.value}
                     onChange={field.onChange}
-                    disabled={!canUpdatePersonalInfo}
+                    label="Mobile Number: "
                     errorMessage={form.formState.errors.mobileNumber?.message}
-                    label="Mobile Number:"
-                    maxLength={10}
                   />
                 </FormControl>
               </FormItem>
@@ -373,15 +372,13 @@ const PersonalInfoForm = ({
             render={({ field }) => (
               <FormItem className="flex justify-center items-center">
                 <FormControl className="grow">
-                  <InputField
+                  <PhoneNumberInput
                     value={field.value}
                     onChange={field.onChange}
-                    disabled={!canUpdatePersonalInfo}
+                    label="Secondary Mobile Number: "
                     errorMessage={
                       form.formState.errors.secondaryMobileNumber?.message
                     }
-                    label="Secondary Mobile Number:"
-                    maxLength={10}
                   />
                 </FormControl>
               </FormItem>
@@ -564,15 +561,13 @@ const PersonalInfoForm = ({
             render={({ field }) => (
               <FormItem className="flex justify-center items-center">
                 <FormControl className="grow">
-                  <InputField
+                  <PhoneNumberInput
                     value={field.value}
                     onChange={field.onChange}
-                    disabled={!canUpdatePersonalInfo}
+                    label="Family Contact Number: "
                     errorMessage={
                       form.formState.errors.familyContactNumber?.message
                     }
-                    label="Family Member Contact Number:"
-                    maxLength={10}
                   />
                 </FormControl>
               </FormItem>
